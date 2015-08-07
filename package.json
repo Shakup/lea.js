@@ -1,0 +1,33 @@
+{
+  "name": "lea.js",
+  "version": "1.0.0",
+  "description": "A Tiny Javascript Framework For Modern Browsers (And Developers)",
+  "main": "lea.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shakup/lea.js.git"
+  },
+  "keywords": [
+    "javascript",
+    "framework",
+    "library",
+    "lighweight",
+    "modern"
+  ],
+  "author": "Sébastien Decamme <sebastien.decamme@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shakup/lea.js/issues"
+  },
+  "homepage": "https://github.com/Shakup/lea.js",
+  "devDependencies": {
+    "grunt": "latest",
+    "grunt-banner": "^0.4.0",
+    "grunt-contrib-uglify": "~0.8.0",
+    "grunt-contrib-watch": "latest",
+    "grunt-notify": "^0.4.1"
+  }
+}
