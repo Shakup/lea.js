@@ -3,10 +3,12 @@ module.exports = function(grunt){
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-		banner: '/* <%= pkg.info.name %> - version <%= pkg.info.version %> - ' +
-			'<%= grunt.template.today("dd-mm-yyyy") %>\n' +
-			'<%= pkg.info.description %>\n ' +
-			'- <%= pkg.info.author.email %> */\n',
+		banner: '/*\n' +
+			' * <%= pkg.name %> - version <%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+			' * <%= pkg.description %>\n' +
+			' * Author: <%= pkg.author %>\n' +
+			' * Homepage: <%= pkg.homepage %>\n' +
+			' */',
 		
 		usebanner: {
 			dist: {
@@ -17,6 +19,27 @@ module.exports = function(grunt){
 				files: {
 					src: ['dist/lea.min.js']
 				}
+			}
+		},
+
+		replace: {
+			dist: {
+				src: ['dist/lea.min.js'],
+				overwrite: true,
+				replacements: [
+					{
+						from: '{{version}}',
+						to: '<%= pkg.version %>'
+					},
+					{
+						from: '{{author}}',
+						to: '<%= pkg.author %>'
+					},
+					{
+						from: '{{homepage}}',
+						to: '<%= pkg.homepage %>'
+					}
+				]
 			}
 		},
 
@@ -35,7 +58,7 @@ module.exports = function(grunt){
 		watch: {
 			scripts: {
 				files: ['src/*.js'],
-				tasks: ['uglify']
+				tasks: ['uglify','usebanner','replace']
 			}
 		},
 
@@ -53,9 +76,10 @@ module.exports = function(grunt){
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-banner');
+	grunt.loadNpmTasks('grunt-text-replace');
 	grunt.loadNpmTasks('grunt-notify');
 
 	grunt.task.run('notify_hooks');
 	
-	grunt.registerTask('default', ['uglify','usebanner']);
+	grunt.registerTask('default', ['uglify','usebanner','replace']);
 }
