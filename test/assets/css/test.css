@@ -1,0 +1,36 @@
+body {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+.container{
+	width: 100%;
+	max-width: 960px;
+}
+.header{
+	margin-bottom: 40px;
+}
+.header h3 {
+	margin-top: 0;
+	margin-bottom: 0;
+	line-height: 40px;
+}
+.align-right{
+	float: right;
+	margin-left: 1em;
+}
+.align-left{
+	float: left;
+	margin-right: 1em;
+}
+p{
+	margin: 1em 0;
+	text-align: justify;
+}
+p:before,
+p:after {
+	content: " ";
+	display: table;
+}
+p:after {
+	clear: both;
+}

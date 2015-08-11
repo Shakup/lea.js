@@ -32,10 +32,6 @@ module.exports = function(grunt){
 						to: '<%= pkg.version %>'
 					},
 					{
-						from: '{{author}}',
-						to: '<%= pkg.author %>'
-					},
-					{
 						from: '{{homepage}}',
 						to: '<%= pkg.homepage %>'
 					}
