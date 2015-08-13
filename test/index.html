@@ -79,6 +79,24 @@
 	
 	<script src="../src/lea.js"></script>
 	<script>
+	var fn = function(){
+		return 'ok';
+	};
+	console.log( $.type(fn) );
+
+	var txt = "hello";
+	console.log( $.type(txt) );
+
+	var integer = 10;
+	console.log( $.type(integer) );
+
+	var arr = ["hello"];
+	console.log( $.type(arr) );
+
+	var obj = {"hello":10};
+	console.log( $.type(obj) );
+
+
 		function the_event(e){
 			console.log( this.src );
 			console.log( $(this).data('info') );

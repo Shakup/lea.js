@@ -1,5 +1,9 @@
 ;(function( root ) {
 
+	if( typeof StopIteration == undefined ) {
+		var StopIteration = new Error( "StopIteration" );
+	}
+
 	/* ==========================================================================
 	   Lea.js constructor
 	   ========================================================================== */
@@ -18,7 +22,7 @@
 			return this;
 		}
 
-		if( !Lea.isArray( query ) ) {
+		if( Lea.type(query) !== "array" ) {
 			query = [query];
 		}
 
@@ -27,7 +31,7 @@
 		query.forEach( (function( obj ){
 			if( Lea.isNode( obj ) ) {
 				this.elements.push( obj );	
-			} else if( Lea.isString( obj ) ) {
+			} else if( Lea.type(obj) === "string" ) {
 				this.elements = this.elements.concat( Lea.toArray( context.querySelectorAll( obj ) ) );
 			}
 		}).bind(this) );
@@ -46,6 +50,32 @@
 	   Helpers
 	   ========================================================================== */
 	
+	// Execute function on DOM ready
+	Lea.ready = function( fn ) {
+		if( document.readyState != "loading" ) {
+			fn();
+		} else {
+			document.addEventListener( "DOMContentLoaded", fn );
+		}
+	};
+
+	// Extend
+	Lea.extend = function( out ) {
+		var out = out || {};
+
+		for( var i = 1; i < arguments.length; i++ ) {
+			if( !arguments[i] ) continue;
+
+			for( var key in arguments[i] ) {
+				if( arguments[i].hasOwnProperty(key) ) {
+					out[key] = arguments[i][key];
+				}
+			}
+		}
+
+		return out;
+	};
+
 	// Throw new error
 	Lea.error = function( msg ) {
 		throw new error( msg );
@@ -56,29 +86,9 @@
 		return Array.prototype.slice.call( coll, 0 );
 	};
 
-	// Check function
-	Lea.isFunction = function( obj ) {
-		return typeof obj === "function";
-	};
-
-	// Check object
-	Lea.isObject = function( obj ) {
-		return typeof obj === "object" && !Lea.isArray( obj );
-	};
-
-	// Check array
-	Lea.isArray = function( obj ) {
-		return Array.isArray( obj );
-	};
-
-	// Check numeric
-	Lea.isNumeric = function( obj ) {
-		return !Lea.isArray( obj ) && (obj - parseFloat( obj ) + 1) >= 0;
-	};
-
-	// Check string
-	Lea.isString = function( obj ) {
-		return typeof obj === "string";
+	// Get object type
+	Lea.type = function( obj ) {
+		return Object.prototype.toString.call(obj).replace(/^\[object (.+)\]$/, "$1").toLowerCase();
 	};
 
 	// Check Element
@@ -103,21 +113,21 @@
 		});
 	};
 
-	// ForEach for objects and arrays
-	Lea.forEach = function( obj, fnc, bind ) {
-		if( Lea.isArray( obj ) ) {
-			obj.forEach( fnc.bind(bind || obj) );
-		} else {
-			for( key in obj ) {
-				if( obj.hasOwnProperty(key) ) {
-					fnc.call( bind || obj, key, obj[key] );
-				}
+	// Parse object
+	Lea.forEach = function( obj, fn, bind ) {
+		for( key in obj ) {
+			if( obj.hasOwnProperty(key) ) {
+				fn.call( bind || obj, key, obj[key] );
 			}
 		}
 	};
 
 	// Convert string to node
 	Lea.str2Node = function( str ) {
+		if( Lea.isNode( str) ) {
+			return str;
+		}
+
 		var div = document.createElement( "div" );
 		div.innerHTML = str;
 		return Array.prototype.slice.call( div.childNodes, 0 );
@@ -160,8 +170,8 @@
 					break;
 
 					case "event":
-						Lea.each( val, function( evt, fnc ) {
-							elt = $( elt ).on( evt, fnc ).get( 0 );
+						Lea.each( val, function( evt, fn ) {
+							elt = $( elt ).on( evt, fn ).get( 0 );
 						});
 					break;
 
@@ -182,11 +192,21 @@
 	
 	Lea.prototype = {
 
+		// Check elements
+		hasElements: function() {
+			return this.elements.length > 0;
+		},
+
 		// Loop on each elements
 		each: function( action ) {
-			this.elements.forEach(function( element, index ) {
-				action.call(element, element, index);
-			});
+			var resp;
+
+			try {
+				this.elements.forEach(function( element, index ) {
+					resp = action.call(element, element, index);
+					if( resp === false ) throw StopIteration;
+				});
+			} catch(error) { if( error != StopIteration ) throw error; }
 
 			return this;
 		},
@@ -203,7 +223,7 @@
 
 		// Get the last element
 		last: function() {
-			return $( this.elements.length ? this.get( this.elements.length - 1 ) : null );
+			return $( this.hasElements() ? this.get( this.elements.length - 1 ) : null );
 		},
 
 		// Get computed style or set style
@@ -217,9 +237,9 @@
 
 			} else {
 
-				if( Lea.isString( prop ) ) {
-					return root.getComputedStyle( this.get(0), null ).getPropertyValue( Lea.dashize(prop) );
-				} else if ( Lea.isObject( prop ) ) {
+				if( Lea.type(prop) === "string" ) {
+					return root.getComputedStyle( this.get(0), null )[ Lea.dashize(prop) ];
+				} else if ( Lea.type(prop) === "object" ) {
 					this.each( function() {
 						var element = this;
 						Lea.forEach( prop, function( key, val ) {
@@ -304,17 +324,17 @@
 		},
 
 		// Add event
-		on: function( event, fnc ) {
+		on: function( event, fn ) {
 			this.each(function() {
-				this.addEventListener(event, fnc, false);
+				this.addEventListener(event, fn, false);
 			}, false);
 			return this;
 		},
 
 		// Remove event
-		off: function( event, fnc ) {
+		off: function( event, fn ) {
 			this.each(function(){
-				this.removeEventListener( event, fnc, false);
+				this.removeEventListener( event, fn, false);
 			});
 			return this;
 		},
@@ -332,8 +352,8 @@
 		},
 
 		// Apply "click" event
-		click: function( fnc ) {
-			return this.on( 'click', fnc );
+		click: function( fn ) {
+			return this.on( 'click', fn );
 		},
 
 		// Set or get attribute
@@ -411,39 +431,22 @@
 		},
 
 		// Insert element before an other element
-		before: function(obj){
-			this.each(function( element ){
-				var pN = element.parentNode;
-
-				if( Lea.isNode( obj ) ) {
-					pN.insertBefore( obj, element );
-				} else {
-					var nodes = Lea.str2Node( obj );
-					nodes.forEach(function( node ) {
-						pN.insertBefore( node, element );
-					});
-				}
+		before: function( obj ){
+			this.each(function() {
+				this.insertAdjacentHTML( 'beforebegin', obj );
 			});
 			return this;
 		},
 
 		// Insert element after an other element
 		after: function( obj ) {
-			this.each(function( element ){
-				var pN =  element .parentNode;
-				
-				if( Lea.isNode( obj ) ) {
-					pN.insertBefore( obj, element .nextSibling );
-				} else {
-					var nodes = Lea.str2Node( obj );
-					nodes.forEach(function( node ) {
-						pN.insertBefore( node, element.nextSibling );
-					});
-				}
+			this.each(function() {
+				this.insertAdjacentHTML( 'afterend', obj );
 			});
 			return this;
 		},
 
+		// Remove element from DOM
 		remove: function(){
 			this.each(function() {
 				this.parentNode.removeChild(this);
@@ -495,7 +498,7 @@
 		},
 
 		// Get next element
-		next: function(){
+		next: function() {
 			var next = [];
 
 			this.each(function() {
@@ -508,8 +511,72 @@
 			this.elements = next;
 
 			return this;
-		}
+		},
 
+		// Clear content element
+		clear: function() {
+			this.each(function() {
+				this.innerHTML = '';
+			});
+			return this;
+		},
+
+		// Get or set text content
+		text: function( txt ) {
+			if( txt != undefined ) {
+				this.each(function() {
+					this.textContent = txt;
+				});
+			} else {
+				return this.hasElements ? this.elements[0].innerText : '';
+			}
+		},
+
+		// Check comparaison
+		is: function( selector ) {
+			var flag = true;
+
+			var matches = function( element ) {
+				return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call( element, selector );
+			};
+
+			this.each(function() {
+				flag = matches( this );
+				return flag;
+			});
+
+			return flag;
+		},
+
+		// Get offset
+		offset: function() {
+			if( !this.hasElements() ) return {"top":0,"left":0}
+
+			var
+				element = this.elements[0],
+				rect    = element.getBoundingClientRect();
+
+			return {
+				"top": rect.top + document.body.scrollTop,
+				"left": rect.left + document.body.scrollLeft
+			};
+		},
+
+		// Get position
+		position: function() {
+			if( !this.hasElements() ) return {"top":0,"left":0}
+
+			return this.elements[0].getBoundingClientRect();
+		},
+
+		// Replace from Html
+		replaceWith: function( html ) {
+			this.each(function() {
+				this.outerHTML = html;
+			});
+
+			return this;
+		}
 	};
 
 	root.Lea = root.$ = Lea;
