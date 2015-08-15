@@ -6,7 +6,7 @@
     "Sébastien Decamme <sebastien.decamme@gmail.com>"
   ],
   "description": "A Tiny Javascript Framework For Modern Browsers (And Developers)",
-  "main": "dist/lea.min.js",
+  "main": "dist/lea.js",
   "moduleType": [
     "amd"
   ],

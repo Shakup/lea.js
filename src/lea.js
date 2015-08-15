@@ -1,43 +1,65 @@
-;(function( root ) {
+(function (factory) {
 
-	if( typeof StopIteration == undefined ) {
-		var StopIteration = new Error( "StopIteration" );
+	var Lea = factory();
+
+	/* ==========================================================================
+	   AMD Compliant For Use With RequireJS
+	   ========================================================================== */
+
+	if (typeof define === "function" && define.amd) {
+		define(["Lea"], Lea);
+	} else {
+		window.Lea = window.$ = Lea;
 	}
+
+}(function () {
+
+	if (typeof StopIteration == undefined) {
+		var StopIteration = new Error("StopIteration");
+	}
+
+
 
 	/* ==========================================================================
 	   Lea.js constructor
 	   ========================================================================== */
 
-	var Lea = function( query, context ) {
-		if( context == undefined ) {
-			context = document;
+	var Lea = function (query, context) {
+		if (context == undefined) {
+			context = window.document;
 		}
 
-		if( this === root ) {
-			return new Lea( query, context );
+		if (this == undefined || this === window) {
+			return new Lea(query, context);
 		}
 
-		if( query == null ) {
+		if (query == null) {
 			this.elements = [];
 			return this;
 		}
 
-		if( Lea.type(query) !== "array" ) {
+		if (Lea.type(query) !== "array") {
 			query = [query];
 		}
 
 		this.elements = [];
 
-		query.forEach( (function( obj ){
-			if( Lea.isNode( obj ) ) {
-				this.elements.push( obj );	
-			} else if( Lea.type(obj) === "string" ) {
-				this.elements = this.elements.concat( Lea.toArray( context.querySelectorAll( obj ) ) );
+		query.forEach((function (obj) {
+			if (Lea.isNode(obj)) {
+				this.elements.push(obj);	
+			} else if (Lea.type(obj) === "string") {
+				this.elements = this.elements.concat(Lea.toArray(context.querySelectorAll(obj)));
 			}
-		}).bind(this) );
+		}).bind(this));
 
 		return this;
 	};
+
+
+
+	/* ==========================================================================
+	   About informations
+	   ========================================================================== */	
 
 	Lea.about = {
 		version  : "{{version}}",
@@ -50,24 +72,29 @@
 	   Helpers
 	   ========================================================================== */
 	
+	// [OK] Add method to Lea
+	Lea.addMethod = function (name, fn) {
+		this.prototype[name] = fn;
+	};
+
 	// Execute function on DOM ready
-	Lea.ready = function( fn ) {
-		if( document.readyState != "loading" ) {
+	Lea.ready = function (fn) {
+		if (document.readyState != "loading") {
 			fn();
 		} else {
-			document.addEventListener( "DOMContentLoaded", fn );
+			document.addEventListener("DOMContentLoaded", fn);
 		}
 	};
 
 	// Extend
-	Lea.extend = function( out ) {
+	Lea.extend = function (out) {
 		var out = out || {};
 
-		for( var i = 1; i < arguments.length; i++ ) {
-			if( !arguments[i] ) continue;
+		for(var i = 1; i < arguments.length; i++) {
+			if (!arguments[i]) continue;
 
-			for( var key in arguments[i] ) {
-				if( arguments[i].hasOwnProperty(key) ) {
+			for(var key in arguments[i]) {
+				if (arguments[i].hasOwnProperty(key)) {
 					out[key] = arguments[i][key];
 				}
 			}
@@ -77,106 +104,99 @@
 	};
 
 	// Throw new error
-	Lea.error = function( msg ) {
-		throw new error( msg );
+	Lea.error = function (msg) {
+		throw new error(msg);
 	};
 
-	// Convert collection to array
-	Lea.toArray = function( coll ){
-		return Array.prototype.slice.call( coll, 0 );
+	// [OK] Convert collection to array
+	Lea.toArray = function (coll){
+		return Array.prototype.slice.call(coll, 0);
 	};
 
-	// Get object type
-	Lea.type = function( obj ) {
+	// [OK] Get object type
+	Lea.type = function (obj) {
 		return Object.prototype.toString.call(obj).replace(/^\[object (.+)\]$/, "$1").toLowerCase();
 	};
 
-	// Check Element
-	Lea.isNode = function( obj ) {
+	// [OK] Check Element
+	Lea.isNode = function (obj) {
 		return obj instanceof HTMLElement;
 	};
 
-	// Camelize
-	Lea.camelize = function( str ) {
-		if( str.charAt(0) == '-') {
+	// [OK] Camelize
+	Lea.camelize = function (str) {
+		if (str.charAt(0) == "-") {
 			str = str.slice(1);
 		}
-		return str.replace( /-\D/g, function( match ) {
-			return match.charAt( 1 ).toUpperCase();
+		return str.replace(/-\D/g, function (match) {
+			return match.charAt(1).toUpperCase();
 		});
 	};
 
-	// Dashize
-	Lea.dashize = function( str ) {
-		return str.replace( /[A-Z]/g, function( match ) {
-			return ( '-' + match.charAt( 0 ).toLowerCase() );
+	// [OK] Dashize 
+	Lea.dashize = function (str) {
+		return str.replace(/[A-Z]/g, function (match) {
+			return ("-" + match.charAt(0).toLowerCase());
 		});
 	};
 
-	// Parse object
-	Lea.forEach = function( obj, fn, bind ) {
-		for( key in obj ) {
-			if( obj.hasOwnProperty(key) ) {
-				fn.call( bind || obj, key, obj[key] );
+	// [OK] Parse object
+	Lea.forEach = function (obj, fn, bind) {
+		for(key in obj) {
+			if (obj.hasOwnProperty(key)) {
+				fn.call(bind || obj, key, obj[key]);
 			}
 		}
 	};
 
-	// Convert string to node
-	Lea.str2Node = function( str ) {
-		if( Lea.isNode( str) ) {
+	// [OK] Convert string to node
+	Lea.str2Node = function (str) {
+		if (Lea.isNode(str)) {
 			return str;
 		}
 
-		var div = document.createElement( "div" );
+		var div = document.createElement("div");
 		div.innerHTML = str;
-		return Array.prototype.slice.call( div.childNodes, 0 );
+		return Array.prototype.slice.call(div.childNodes, 0);
 	};
 
-	// Convert RGB value to Hexadecimal
-	Lea.rgb2hex = function( rgb ){
-		if( rgb.search( "rgb" ) == -1) {
-			return rgb;
-		} else if( rgb == "rgba(0, 0, 0, 0)" ) {
-			return "transparent";
-		} else {
-			rgb = rgb.match( /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+))?\)$/ );
-			
-			var hex = function( x ) {
-				return ( "0" + parseInt(x).toString(16) ).slice(-2);
-			};
+	// [OK] Create Html Element 
+	Lea.create = function (tag, attr) {
+		var elt = document.createElement(tag);
 
-			return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]); 
-		}
-	};
-
-	// Create Html Element
-	Lea.create = function( tag, attr ) {
-		var elt = document.createElement( tag );
-
-		if( attr != undefined ) {
-			Lea.each( attr || {}, function( key, val ) {
-				switch( key.toLowerCase() ) {
+		if (attr != undefined) {
+			Lea.forEach(attr || {}, function (key, val) {
+				switch(key.toLowerCase()) {
 					case "style": 
-						elt = $( elt ).css( val ).get( 0 );
+						elt = $(elt).css(val).get(0);
 					break;
 
 					case "html": 
-						elt = $( elt ).html( val ).get( 0 );
+						elt.innerHTML = val;
+					break;
+
+					case "text":
+						elt.innerText = val;
 					break;
 
 					case "class":
-						elt = $(elt).addClass( val ).get( 0 );
+						elt.classList.add(val);
 					break;
 
 					case "event":
-						Lea.each( val, function( evt, fn ) {
-							elt = $( elt ).on( evt, fn ).get( 0 );
+						Lea.forEach(val, function (evt, fn) {
+							elt.addEventListener(evt, fn, false);
+						});
+					break;
+
+					case "data":
+						Lea.forEach(val, function (_key, _val) {
+							elt.dataset[_key] = _val;
 						});
 					break;
 
 					default: 
-						elt = $( elt ).attr( key, val ).get( 0 );
+						elt.setAttribute(key, val);
 					break;
 				}
 			});
@@ -184,66 +204,127 @@
 		return elt;
 	};
 
+	// Create or get cookie
+	Lea.cookie = function (name, value, options) {
+		var stringifyCookieValue = function (value) {
+			return encodeURIComponent(options.json ? JSON.stringify(value) : String(value));
+		};
+
+		var parseCookieValue = function (s) {
+			if (s.indexOf('"') === 0) {
+				s = s.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+			}
+
+			try {
+				s = decodeURIComponent(s.replace(/\+/g, " "));
+				return options.json ? JSON.parse(s) : s;
+			} catch(e) {}
+		};
+
+		if (value != undefined) {
+
+			if (options == undefined) {
+				options = {};
+			};
+
+			if (typeof options.expires == "number") {
+				var 
+					days = options.expires,
+					time = options.expires = new Date();
+				
+				time.setTime(+t + days * 864e+5);
+			}
+
+			document.cookie = [
+				encodeURIComponent(name), "=", stringifyCookieValue(value),
+				options.expires ? "; expires=" + options.expires.toUTCString() : "",
+				options.path    ? "; path=" + options.path : "",
+				options.domain  ? "; domain=" + options.domain : "",
+				options.secure  ? "; secure" : ""
+			].join("");
+
+			return this;
+
+		} else {
+
+			var
+				result  = {},
+				cookies = document.cookie ? document.cookie.split("; ") : [];
+
+			for (var i = 0, l = cookies.length; i < l; i++) {
+				var 
+					parts     = cookies[i].split("="),
+					part_name = decodeURIComponent(parts.shift()),
+					cookie    = parts.join("=");
+
+				if (name === part_name) {
+					result = parseCookieValue(cookie, value);
+					break;
+				}
+			}
+		}
+	};
+
 
 
 	/* ==========================================================================
-	   Functions
+	   Methods
 	   ========================================================================== */
 	
 	Lea.prototype = {
 
-		// Check elements
-		hasElements: function() {
+		// [OK] Check elements
+		hasElements: function () {
 			return this.elements.length > 0;
 		},
 
 		// Loop on each elements
-		each: function( action ) {
-			var resp;
+		each: function (action) {
+			var response;
 
 			try {
-				this.elements.forEach(function( element, index ) {
-					resp = action.call(element, element, index);
-					if( resp === false ) throw StopIteration;
+				this.elements.forEach(function (element, index) {
+					response = action.call(element, element, index);
+					if (response === false) throw StopIteration;
 				});
-			} catch(error) { if( error != StopIteration ) throw error; }
+			} catch(error) { if (error != StopIteration) throw error; }
 
 			return this;
 		},
 
-		// Get element
-		get: function( index ) {
+		// [OK] Get element
+		get: function (index) {
 			return index != undefined ? this.elements[ index ] || null : this.elements;
 		},
 
 		// Get the first element
-		first: function() {
-			return $( this.get(0) );
+		first: function () {
+			return $(this.hasElements() ? this.get(0) : []);
 		},
 
 		// Get the last element
-		last: function() {
-			return $( this.hasElements() ? this.get( this.elements.length - 1 ) : null );
+		last: function () {
+			return $(this.hasElements() ? this.get(this.elements.length - 1) : []);
 		},
 
 		// Get computed style or set style
-		css: function( prop, value ) {
-			if( value != undefined ) {
+		css: function (prop, value) {
+			if (value != undefined) {
 				
-				this.each( function() {
-					this.style[ Lea.camelize( prop ) ] = value;
+				this.each(function () {
+					this.style[ Lea.camelize(prop) ] = value;
 				});
 				return this;
 
 			} else {
 
-				if( Lea.type(prop) === "string" ) {
-					return root.getComputedStyle( this.get(0), null )[ Lea.dashize(prop) ];
-				} else if ( Lea.type(prop) === "object" ) {
-					this.each( function() {
+				if (Lea.type(prop) === "string") {
+					return window.getComputedStyle(this.get(0), null)[ Lea.dashize(prop) ];
+				} else if (Lea.type(prop) === "object") {
+					this.each(function () {
 						var element = this;
-						Lea.forEach( prop, function( key, val ) {
-							element.style[ Lea.camelize( key ) ] = val;
+						Lea.forEach(prop, function (key, val) {
+							element.style[ Lea.camelize(key) ] = val;
 						});
 					});
 					return this;
@@ -252,27 +333,27 @@
 			}
 		},
 
-		// Add class
-		addClass: function( klass ) {
-			this.each(function() {
-				this.classList.add( klass );
+		// [OK] Add class
+		addClass: function (klass) {
+			this.each(function () {
+				this.classList.add(klass);
 			});
 			return this;
 		},
 
-		// Remove class
-		removeClass: function( klass ) {
-			this.each(function() {
-				this.classList.remove( klass );
+		// [OK] Remove class
+		removeClass: function (klass) {
+			this.each(function () {
+				this.classList.remove(klass);
 			});
 			return this;
 		},
 
-		// Check class exists
-		hasClass: function( klass ) {
+		// [OK] Check class exists
+		hasClass: function (klass) {
 			var bool = true;
-			this.elements.forEach(function( element ) {
-				if( !element.classList.contains( klass ) ) {
+			this.elements.forEach(function (element) {
+				if (!element.classList.contains(klass)) {
 					bool = false;
 					return;
 				}
@@ -280,43 +361,56 @@
 			return bool;
 		},
 
-		// Show element
-		show: function( display ) {
-			if( display == undefined ) var display = 'block';
+		// [OK] Toggle class
+		toggleClass: function (klass) {
+			this.each(function () {
+				var $elt = $(this);
+				if( $elt.hasClass(klass) ) {
+					$elt.removeClass(klass);
+				} else {
+					$elt.addClass(klass);
+				}
+			});
+			return this;
+		},
 
-			this.each(function() {
+		// [OK] Show element
+		show: function (display) {
+			if (display == undefined) var display = "block";
+
+			this.each(function () {
 				this.style.display = display;
 			});
 
 			return this;
 		},
 
-		// Hide element
-		hide: function() {
-			this.each(function() {
-				this.style.display = 'none';
+		// [OK] Hide element
+		hide: function () {
+			this.each(function () {
+				this.style.display = "none";
 			});
 
 			return this;
 		},
 
-		// Toggle show/hide on element
-		toggle: function( display ) {
-			if( display == undefined ) var display = 'block';
+		// Toggle display
+		toggle: function (display) {
+			if (display == undefined) var display = "block";
 
-			this.each(function(){
-				this.style.display = Lea( this ).css( 'display' ) == 'none' ? display : 'none';
+			this.each(function (){
+				this.style.display = Lea(this).css("display") == "none" ? display : "none";
 			});
 
 			return this;
 		},
 
 		// Insert or get Html from element
-		html: function( src ) {
-			if( src == undefined ) {
-				return this.get( 0 ).innerHTML;
+		html: function (src) {
+			if (src == undefined) {
+				return this.get(0).innerHTML;
 			} else {
-				this.each(function() {
+				this.each(function () {
 					this.innerHTML = src;
 				});
 				return this;
@@ -324,156 +418,157 @@
 		},
 
 		// Add event
-		on: function( event, fn ) {
-			this.each(function() {
+		on: function (event, fn) {
+			this.each(function () {
 				this.addEventListener(event, fn, false);
 			}, false);
 			return this;
 		},
 
 		// Remove event
-		off: function( event, fn ) {
-			this.each(function(){
-				this.removeEventListener( event, fn, false);
+		off: function (event, fn) {
+			this.each(function (){
+				this.removeEventListener(event, fn, false);
 			});
 			return this;
 		},
 
 		// Fire event
-		trigger: function( event ){
-			var evt = document.createEvent( "HTMLEvents" );
-			evt.initEvent( event, true, true );
+		trigger: function (event){
+			var evt = document.createEvent("HTMLEvents");
+			evt.initEvent(event, true, true);
 
-			this.each(function() {
-				this.dispatchEvent( evt );
+			this.each(function () {
+				this.dispatchEvent(evt);
 			});
 
 			return this;
 		},
 
 		// Apply "click" event
-		click: function( fn ) {
-			return this.on( 'click', fn );
+		click: function (fn) {
+			return this.on("click", fn);
 		},
 
 		// Set or get attribute
-		attr: function( attr, val ){
-			if( val != undefined) {
-				this.each(function() {
-					this.setAttribute( attr, val );
+		attr: function (attr, val){
+			if (val != undefined) {
+				this.each(function () {
+					this.setAttribute(attr, val);
 				});
 				return this;
 			} else {
-				return this.elements[0].getAttribute( attr );
+				return this.elements[0].getAttribute(attr);
 			}
 		},
 
 		// Remove attribute
-		removeAttr: function( attr ) {
-			this.each(function() {
-				this.removeAttribute( attr );
+		removeAttr: function (attr) {
+			this.each(function () {
+				this.removeAttribute(attr);
 			});
 			return this;
 		},
 
-		// Set or get data attribute
-		data: function( data, value ) {
-			if( value != undefined ) {
-				this.each(function() {
+		// [OK] Set or get data
+		data: function (data, value) {
+			if (value != undefined) {
+				this.each(function () {
 					this.dataset[data] = value;
 				});
 				return this;
 			} else {
-				return this.get( 0 ).dataset[data];
+				return this.get(0).dataset[data];
 			}
 		},
 
-		removeData: function( data ) {
-			this.each(function() {
+		// [OK] Remove data
+		removeData: function (data) {
+			this.each(function () {
 				delete this.dataset[data];
 			});
 			return this;
 		},
 
 		// Clone node
-		clone: function() {
+		clone: function () {
 			return this.elements[0].cloneNode(true);
 		},
 
-		// Append element 
-		append: function( obj ) {
-			this.each(function( element ) {
-				if( Lea.isNode( obj ) ) {
-					element.appendChild( obj );
+		// [OK] Append element 
+		append: function (obj) {
+			this.each(function (element) {
+				if (Lea.isNode(obj)) {
+					element.appendChild(obj);
 				} else {
-					var nodes = Lea.str2Node( obj );
-					nodes.forEach(function( node ) {
-						element.appendChild( node );
+					var nodes = Lea.str2Node(obj);
+					nodes.forEach(function (node) {
+						element.appendChild(node);
 					});
 				}
 			});
 			return this;
 		},
 
-		// Prepend element
-		prepend: function( obj ) {
-			this.each(function( element ) {
-				if( Lea.isNode( obj ) ) {
+		// [OK] Prepend element
+		prepend: function (obj) {
+			this.each(function (element) {
+				if (Lea.isNode(obj)) {
 					element.insertBefore(obj, element.firstChild);
 				} else {
-					var nodes = Lea.str2Node( obj );
-					nodes.forEach(function( node ) {
-						element.insertBefore( node, element.firstChild );
+					var nodes = Lea.str2Node(obj);
+					nodes.forEach(function (node) {
+						element.insertBefore(node, element.firstChild);
 					});
 				}
 			});
 			return this;
 		},
 
-		// Insert element before an other element
-		before: function( obj ){
-			this.each(function() {
-				this.insertAdjacentHTML( 'beforebegin', obj );
+		// [OK] Insert element before an other element
+		before: function (obj){
+			this.each(function () {
+				this.insertAdjacentHTML("beforebegin", obj);
 			});
 			return this;
 		},
 
-		// Insert element after an other element
-		after: function( obj ) {
-			this.each(function() {
-				this.insertAdjacentHTML( 'afterend', obj );
+		// [OK] Insert element after an other element
+		after: function (obj) {
+			this.each(function () {
+				this.insertAdjacentHTML("afterend", obj);
 			});
 			return this;
 		},
 
-		// Remove element from DOM
-		remove: function(){
-			this.each(function() {
+		// [OK] Remove element from DOM
+		remove: function (){
+			this.each(function () {
 				this.parentNode.removeChild(this);
 			});
 			return this;
 		},
 
-		// Get parent
-		parent: function(){
+		// [OK] Get parent
+		parent: function (){
 			var parents = [];
 
-			this.each(function() {
+			this.each(function () {
 				var parent = this.parentNode;
-				if( parent ) {
+				if (parent) {
 					parents.push(parent);
 				}
 			});
 			
-			return new Lea( parents );
+			return new Lea(parents);
 		},
 
-		// Find elements
-		find: function( selector ) {
+		// [OK] Find elements
+		find: function (selector) {
 			var found = [];
 
-			this.elements.forEach(function(element) {
-				found = found.concat( Lea.toArray( element.querySelectorAll( selector ) ) );
+			this.elements.forEach(function (element) {
+				found = found.concat(Lea.toArray(element.querySelectorAll(selector)));
 			});
 			
 			this.elements = found;
@@ -481,14 +576,14 @@
 			return this;
 		},
 
-		// Get previous element
-		prev: function() {
+		// [OK] Get previous element
+		prev: function () {
 			var previous = [];
 
-			this.each(function() {
+			this.each(function () {
 				var prev = this.previousElementSibling;
-				if( prev ) {
-					previous.push( prev );
+				if (prev) {
+					previous.push(prev);
 				}
 			});
 
@@ -497,13 +592,13 @@
 			return this;
 		},
 
-		// Get next element
-		next: function() {
+		// [OK] Get next element
+		next: function () {
 			var next = [];
 
-			this.each(function() {
+			this.each(function () {
 				var nex = this.nextElementSibling;
-				if( nex ) {
+				if (nex) {
 					next.push(nex);
 				}
 			});
@@ -513,65 +608,71 @@
 			return this;
 		},
 
-		// Clear content element
-		clear: function() {
-			this.each(function() {
-				this.innerHTML = '';
+		// [OK] Clear content
+		clear: function () {
+			this.each(function () {
+				this.innerHTML = "";
 			});
 			return this;
 		},
 
-		// Get or set text content
-		text: function( txt ) {
-			if( txt != undefined ) {
-				this.each(function() {
+		// [OK] Get or set text content
+		text: function (txt) {
+			if (txt != undefined) {
+				this.each(function () {
 					this.textContent = txt;
 				});
+				return this;
 			} else {
-				return this.hasElements ? this.elements[0].innerText : '';
+				return this.hasElements ? this.elements[0].innerText : "";
 			}
 		},
 
-		// Check comparaison
-		is: function( selector ) {
+		// [OK] Check comparaison
+		is: function (selector) {
 			var flag = true;
 
-			var matches = function( element ) {
-				return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call( element, selector );
+			var matches = function (element) {
+				return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call(element, selector);
 			};
 
-			this.each(function() {
-				flag = matches( this );
+			this.each(function () {
+				flag = matches(this);
 				return flag;
 			});
 
 			return flag;
 		},
 
-		// Get offset
-		offset: function() {
-			if( !this.hasElements() ) return {"top":0,"left":0}
+		// [OK] Get offset
+		offset: function () {
+			if (!this.hasElements()) return {top:0,left:0}
 
 			var
 				element = this.elements[0],
 				rect    = element.getBoundingClientRect();
 
 			return {
-				"top": rect.top + document.body.scrollTop,
-				"left": rect.left + document.body.scrollLeft
+				top: rect.top + document.body.scrollTop,
+				left: rect.left + document.body.scrollLeft
 			};
 		},
 
-		// Get position
-		position: function() {
-			if( !this.hasElements() ) return {"top":0,"left":0}
+		// [OK] Get position
+		position: function () {
+			if (!this.hasElements()) return {top:0,left:0}
 
-			return this.elements[0].getBoundingClientRect();
+			var rect = this.elements[0].getBoundingClientRect();
+
+			return {
+				top: rect.top,
+				left: rect.left
+			};
 		},
 
-		// Replace from Html
-		replaceWith: function( html ) {
-			this.each(function() {
+		// [OK] Replace from Html
+		replaceWith: function (html) {
+			this.each(function () {
 				this.outerHTML = html;
 			});
 
@@ -579,8 +680,8 @@
 		}
 	};
 
-	root.Lea = root.$ = Lea;
+	console.info("Powered by Lea.js" + "\n" + "Version: " + Lea.about.version + "\n" + "Homepage:" + Lea.about.homepage);
 
-	console.info( "Powered by Lea.js" + "\n" + "Version: " + Lea.about.version + "\n" + "Homepage:" + Lea.about.homepage );
+	return Lea;
 
-})( typeof window != undefined ? window : this );
+}));

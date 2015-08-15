@@ -17,14 +17,14 @@ module.exports = function(grunt){
 					banner: '<%= banner %>'
 				},
 				files: {
-					src: ['dist/lea.min.js']
+					src: ['dist/lea.js']
 				}
 			}
 		},
 
 		replace: {
 			dist: {
-				src: ['dist/lea.min.js'],
+				src: ['dist/lea.js'],
 				overwrite: true,
 				replacements: [
 					{
@@ -46,7 +46,7 @@ module.exports = function(grunt){
 			},
 			dist: {
 				files: {
-					'dist/lea.min.js': ['src/lea.js']
+					'dist/lea.js': ['src/lea.js']
 				}
 			}
 		},

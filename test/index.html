@@ -7,6 +7,16 @@
 	<title>Lea.js</title>
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/test.css">
+	<style type="text/css">
+		#obj{
+			position: absolute;
+			right: 20px;
+			bottom: 20px;
+			height: 40px;
+			width: 40px;
+			background-color: rgba(0,0,255,.4);
+		}
+	</style>
 </head>
 <body>
 	<div class="container">
@@ -30,13 +40,14 @@
 			</p>
 
 			<h3>LiveScript et Mosaic Communications Corporation</h3>
-			<p>
+			<p style="position:relative">
 				<img src="assets/img/2.jpeg" width="255" height="200" class="align-right img-thumbnail">
 				En décembre 1995, Sun et Netscape annoncent5 la sortie de JavaScript. En mars 1996, Netscape met en œuvre le moteur JavaScript dans son navigateur Web Netscape Navigator 2.0. Le succès de ce navigateur contribue à l'adoption rapide de JavaScript dans le développement web orienté client. Microsoft réagit alors en développant JScript, qu'il inclut ensuite dans Internet Explorer 3.0 en août 1996 pour la sortie de son navigateur.
 				<br>
 				Brendan Eich a initialement développé un langage de script côté serveur, appelé LiveScript, pour renforcer l'offre commerciale de serveur HTTP de Mosaic Communications Corporation. La sortie de LiveScript intervient à l'époque où le NCSA force Mosaic Communications Corporation à changer de nom pour devenir Netscape Communications Corporation.
 				<br>
 				Netscape travaille alors au développement d'une version orientée client de LiveScript. Quelques jours avant sa sortie, Netscape change le nom de LiveScript pour JavaScript. Sun Microsystems et Netscape étaient partenaires, et la machine virtuelle Java de plus en plus populaire. Ce changement de nom servait les intérêts des deux sociétés.
+				<span id="obj"></span>
 			</p>
 
 			<h3>Netscape et ECMAScript</h3>
@@ -76,26 +87,9 @@
 
 		</div>
 	</div>
-	
+
 	<script src="../src/lea.js"></script>
 	<script>
-	var fn = function(){
-		return 'ok';
-	};
-	console.log( $.type(fn) );
-
-	var txt = "hello";
-	console.log( $.type(txt) );
-
-	var integer = 10;
-	console.log( $.type(integer) );
-
-	var arr = ["hello"];
-	console.log( $.type(arr) );
-
-	var obj = {"hello":10};
-	console.log( $.type(obj) );
-
 
 		function the_event(e){
 			console.log( this.src );
@@ -123,6 +117,10 @@
 				.off( 'click', the_event )
 				.removeData( 'info' );
 		});
+
+		var cook = $.cookie('local');
+
+		console.log(cook);
 	</script>
 </body>
 </html>
