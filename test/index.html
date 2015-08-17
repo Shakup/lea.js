@@ -137,33 +137,18 @@
 
 	<script src="../src/lea.js"></script>
 	<script>
-		$('#myForm').on('submit', function (e) {
-			e.preventDefault();
-
-			$(this)
-				.submit()
-				.success(function (res) {
-					console.log(res);
-				});
-		});
-
 
 		function the_event(e){
 			console.log( this.src );
 			console.log( $(this).data('info') );
 		};
 
-		$('#btnApply').click(function(e){
-			$('img')
-				.click( the_event )
-				.data('info', 'yes');
-
-			$('p')
-				.prepend('<strong>PREPEND</strong>')
-				.append('<strong>APPEND</strong>')
-				.before('<p>BEFORE</p>')
-				.after('<p>AFTER</p>');
-		});
+		//$('#btnApply').click(function(e){
+			$("body").delegate("img", "click", function(e){
+				console.log(e);
+				$(this).after('<img src="assets/img/1.jpeg" width="180" height="120" class="align-right img-thumbnail">');
+			});
+		//});
 
 		$('#btnTrigger').click(function(e){
 			$('img').trigger('click');

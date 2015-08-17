@@ -565,6 +565,18 @@
 			return this;
 		},
 
+		delegate: function (selector, event, fn) {
+			this.each(function (){
+				this.addEventListener(event, function (evt) {
+					if ( Lea(evt.target).is(selector) ) {
+						fn.call(evt.target, event);
+					}
+				}, false );
+			});
+
+			return this;
+		},
+
 		// Fire event
 		trigger: function (event){
 			var evt = document.createEvent("HTMLEvents");
