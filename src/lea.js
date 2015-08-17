@@ -317,8 +317,51 @@
 		return Lea.ajax( url, Lea.extend(options || {}, {method: "GET"}) );
 	};
 
+	// Ajax Post
 	Lea.post = function (url, data, options) {
 		return Lea.ajax( url, Lea.extend(options || {}, {method: "POST", data: data || {}}) );
+	};
+
+	// [OK] Debounce
+	Lea.debounce = function (fn, delay) {
+		var timer;
+		
+		return function () {
+			var
+				args    = arguments,
+				context = this;
+		
+			clearTimeout(timer);
+			
+			timer = setTimeout(function () {
+				fn.apply(context, args);
+			}, delay);
+		}
+	};
+
+	// [OK] Throttle
+	Lea.throttle = function(fn, delay) {
+		var last, timer;
+		
+		return function () {
+			var
+				context = this,
+				now     = +new Date(),
+				args    = arguments;
+			
+			if (last && now < last + delay) {
+				
+				clearTimeout(timer);
+				timer = setTimeout(function () {
+					last = now;
+					fn.apply(context, args);
+				}, delay);
+
+			} else {
+				last = now;
+				fn.apply(context, args);
+			}
+		};
 	};
 
 	/* ==========================================================================
@@ -363,31 +406,6 @@
 
 		// Get computed style or set style
 		css: function (prop, value) {
-
-			/*var getPrefixedProp = function (prop) {
-				var
-					div = document.createElement("div"),
-					pre = ["Webkit", "O", "MS", "Moz"];
-				
-				prop = Lea.camelize(prop);
-
-				if (prop in div.style) {
-					return prop;
-				} else {
-					var prefixedProp = prop;
-
-					pre.forEach(function (prefix) {
-						prefixedProp = prefix + prop;
-
-						if (prefixedProp in div) {
-							prop = prefixedProp;
-							throw StopIteration;
-						}
-					});
-
-					return prefixedProp;
-				}
-			};*/
 
 			if (value != undefined) {
 				this.each(function () {
@@ -442,18 +460,28 @@
 			return element.offsetWidth;
 		},
 
-		// Get scroll offsets
+		// [OK] Get scroll offsets
 		scroll: function () {
 			var element = this.elements[0];
 
-			return {
-				'top': element.scrollTop,
-				'left': element.scrollLeft,
-				'width': element.scrollWidth,
-				'height': element.scrollHeight
-			};
+			if (element == window) {
+				return {
+					top: element.scrollY,
+					left: element.scrollX,
+					width: document.body.scrollWidth,
+					height: document.body.scrollHeight
+				};
+			} else {
+				return {
+					top: element.scrollTop,
+					left: element.scrollLeft,
+					width: element.scrollWidth,
+					height: element.scrollHeight
+				};
+			}
 		},
 
+		// [OK] Get or set value
 		val: function (value) {
 			if (value != undefined) {
 				this.each(function(){
@@ -565,6 +593,7 @@
 			return this;
 		},
 
+		// [OK] Live event
 		delegate: function (selector, event, fn) {
 			this.each(function (){
 				this.addEventListener(event, function (evt) {
@@ -712,7 +741,7 @@
 			var found = [];
 
 			this.elements.forEach(function (element) {
-				found = found.concat(Lea.toArray(element.querySelectorAll(selector)));
+				found = found.concat( Lea.toArray(element.querySelectorAll(selector)) );
 			});
 			
 			this.elements = found;

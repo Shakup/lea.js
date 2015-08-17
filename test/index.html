@@ -16,6 +16,10 @@
 			width: 40px;
 			background-color: rgba(0,0,255,.4);
 		}
+		textarea{
+			overflow-y: scroll;
+			height: 150px;
+		}
 	</style>
 </head>
 <body>
@@ -55,7 +59,7 @@
 					</label>
 				</p>
 				<p>
-					<input type="text" name="form[txt1]">
+					<input type="text" name="form[txt1]" id="input">
 					<input type="text" name="form[txt2]" value="Hey what's up ?">
 					<input type="email" name="form[txt3]" value="sebastien.decamme@gmail.com">
 					<input type="password" name="form[txt4]" value="GreatPassword!">
@@ -142,13 +146,6 @@
 			console.log( this.src );
 			console.log( $(this).data('info') );
 		};
-
-		//$('#btnApply').click(function(e){
-			$("body").delegate("img", "click", function(e){
-				console.log(e);
-				$(this).after('<img src="assets/img/1.jpeg" width="180" height="120" class="align-right img-thumbnail">');
-			});
-		//});
 
 		$('#btnTrigger').click(function(e){
 			$('img').trigger('click');
