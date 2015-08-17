@@ -22,6 +22,8 @@
     "**/.*",
     "node_modules",
     "bower_components",
-    "src"
+    "src",
+    "test",
+    "Grunfile.js"
   ]
 }

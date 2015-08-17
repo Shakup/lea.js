@@ -24,4 +24,6 @@ define(["lea"], function($) {
 
 	});
 
+	console.log( $.getUrlParameters("hello") );
+
 });

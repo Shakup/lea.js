@@ -2,10 +2,6 @@
 
 	"use strict";
 
-	if (typeof StopIteration == undefined) {
-		var StopIteration = new Error("StopIteration");
-	}
-
 
 	/* ==========================================================================
 	   Lea.js constructor
@@ -86,11 +82,6 @@
 		}
 
 		return out;
-	};
-
-	// [OK] Throw new error
-	Lea.error = function (msg) {
-		throw new Error(msg);
 	};
 
 	// [OK] Convert collection to array
@@ -209,6 +200,22 @@
 	// Check if mobile
 	Lea.isMobile = function () {
 		return !Lea.device("desktop");
+	};
+
+	// Get URL parameters
+	Lea.getUrlParameters = function (parameter) {
+		var
+			regex = /([^&=]+)=?([^&]*)/g,
+			match, store = {},
+			haystack = window.location.search || window.location.hash;
+
+		haystack = haystack.substring(haystack.indexOf("?") + 1, haystack.length);
+
+		while ((match = regex.exec(haystack))) {
+			store[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+		}
+
+		return parameter != undefined ? store[parameter] || null : store;
 	};
 
 	// Ajax
