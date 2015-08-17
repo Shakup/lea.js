@@ -1,18 +1,22 @@
 (function (factory) {
 
-	var Lea = factory();
+	var Lea = new factory();
 
 	/* ==========================================================================
 	   AMD Compliant For Use With RequireJS
 	   ========================================================================== */
 
 	if (typeof define === "function" && define.amd) {
-		define(["Lea"], Lea);
+		define([], Lea);
+	//} else if (module != undefined && module.exports) {
+	//	module.exports = Lea;
 	} else {
 		window.Lea = window.$ = Lea;
 	}
 
 }(function () {
+
+	"use strict";
 
 	if (typeof StopIteration == undefined) {
 		var StopIteration = new Error("StopIteration");
@@ -45,7 +49,7 @@
 		this.elements = [];
 
 		query.forEach((function (obj) {
-			if (Lea.isNode(obj)) {
+			if (Lea.isNode(obj) || obj === window || obj === document) {
 				this.elements.push(obj);	
 			} else if (Lea.type(obj) === "string") {
 				this.elements = this.elements.concat(Lea.toArray(context.querySelectorAll(obj)));
@@ -103,9 +107,9 @@
 		return out;
 	};
 
-	// Throw new error
+	// [OK] Throw new error
 	Lea.error = function (msg) {
-		throw new error(msg);
+		throw new Error(msg);
 	};
 
 	// [OK] Convert collection to array
@@ -141,10 +145,10 @@
 	};
 
 	// [OK] Parse object
-	Lea.forEach = function (obj, fn, bind) {
-		for(key in obj) {
+	Lea.forEach = function (obj, fn, context) {
+		for(var key in obj) {
 			if (obj.hasOwnProperty(key)) {
-				fn.call(bind || obj, key, obj[key]);
+				fn.call(context || obj, key, obj[key]);
 			}
 		}
 	};
@@ -204,68 +208,118 @@
 		return elt;
 	};
 
-	// Create or get cookie
-	Lea.cookie = function (name, value, options) {
-		var stringifyCookieValue = function (value) {
-			return encodeURIComponent(options.json ? JSON.stringify(value) : String(value));
-		};
+	// [OK] Get device type (tablet / phone / desktop)
+	Lea.device = function (type) {
+		var ua = navigator.userAgent.toLowerCase();
 
-		var parseCookieValue = function (s) {
-			if (s.indexOf('"') === 0) {
-				s = s.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+		var device = (function () {
+			if (/(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(ua)) {
+				return "tablet";
+			} else if (/(mobi|ipod|phone|blackberry|opera mini|fennec|minimo|symbian|psp|nintendo ds|archos|skyfire|puffin|blazer|bolt|gobrowser|iris|maemo|semc|teashark|uzard)/.test(ua)) {
+				return "phone";
+			} else {
+				return "desktop";
 			}
+		})();
 
-			try {
-				s = decodeURIComponent(s.replace(/\+/g, " "));
-				return options.json ? JSON.parse(s) : s;
-			} catch(e) {}
-		};
-
-		if (value != undefined) {
-
-			if (options == undefined) {
-				options = {};
-			};
-
-			if (typeof options.expires == "number") {
-				var 
-					days = options.expires,
-					time = options.expires = new Date();
-				
-				time.setTime(+t + days * 864e+5);
-			}
-
-			document.cookie = [
-				encodeURIComponent(name), "=", stringifyCookieValue(value),
-				options.expires ? "; expires=" + options.expires.toUTCString() : "",
-				options.path    ? "; path=" + options.path : "",
-				options.domain  ? "; domain=" + options.domain : "",
-				options.secure  ? "; secure" : ""
-			].join("");
-
-			return this;
-
-		} else {
-
-			var
-				result  = {},
-				cookies = document.cookie ? document.cookie.split("; ") : [];
-
-			for (var i = 0, l = cookies.length; i < l; i++) {
-				var 
-					parts     = cookies[i].split("="),
-					part_name = decodeURIComponent(parts.shift()),
-					cookie    = parts.join("=");
-
-				if (name === part_name) {
-					result = parseCookieValue(cookie, value);
-					break;
-				}
-			}
-		}
+		return type != undefined ? (device === type) : device;
 	};
 
+	// Check if mobile
+	Lea.isMobile = function () {
+		return !Lea.device("desktop");
+	};
 
+	// Ajax
+	Lea.ajax = function (url, options) {
+
+		this.httpRequest = function () {
+			var
+				cb    = (function(response){}).bind(this),
+				_this = this;
+
+			this.options = Lea.extend({
+				method: "GET",
+				complete: cb,
+				success: cb,
+				error: cb,
+				send: true,
+				async: true,
+				data: {},
+				json: false,
+				contentType: "application/x-www-form-urlencoded"
+			}, options || {});
+
+			this.transport      = new XMLHttpRequest();
+			this.options.method = this.options.method.toUpperCase();
+			this.parameters     = "";
+
+			this.transport.onreadystatechange = function () {
+				if (this.readyState == 4) {
+					var response = _this.options.json ? JSON.parse(this.responseText) : this.responseText;
+					
+					_this.options.complete.call( _this, response );
+
+					if (this.status == 200 || this.status === 0) {
+						_this.options.success.call( _this, response );
+					} else {
+						_this.options.error.call( _this, response );
+					}
+				}
+			};
+
+			this.transport.open(this.options.method, url, this.options.async);
+
+			if (this.options.method == "POST") {
+				this.transport.setRequestHeader("Content-Type", this.options.contentType);
+				
+				Lea.forEach(this.options.data, function (key, val) {
+					if (_this.parameters.length) {
+						_this.parameters += "&";
+					}
+					_this.parameters += encodeURIComponent(key) + "=" + encodeURIComponent(val);
+				});
+			}
+
+			if (this.options.send) {
+				this.send();
+			};
+		};
+
+		this.httpRequest.prototype = {
+			complete: function (cb) {
+				this.options.complete = cb.bind(this);
+				return this;
+			},
+			success: function (cb) {
+				this.options.success = cb.bind(this);
+				return this;
+			},
+			error: function (cb) {
+				this.options.error = cb.bind(this);
+				return this;
+			},
+			send: function () {
+				this.transport.send( this.parameters.length ? this.parameters : null );
+				return this;
+			},
+			abort: function () {
+				this.transport.abort();
+				return this;
+			}
+		};
+
+		return new this.httpRequest();
+	};
+
+	// Ajax Get
+	Lea.get = function (url, options) {
+		return Lea.ajax( url, Lea.extend(options || {}, {method: "GET"}) );
+	};
+
+	Lea.post = function (url, data, options) {
+		return Lea.ajax( url, Lea.extend(options || {}, {method: "POST", data: data || {}}) );
+	};
 
 	/* ==========================================================================
 	   Methods
@@ -309,8 +363,33 @@
 
 		// Get computed style or set style
 		css: function (prop, value) {
-			if (value != undefined) {
+
+			/*var getPrefixedProp = function (prop) {
+				var
+					div = document.createElement("div"),
+					pre = ["Webkit", "O", "MS", "Moz"];
 				
+				prop = Lea.camelize(prop);
+
+				if (prop in div.style) {
+					return prop;
+				} else {
+					var prefixedProp = prop;
+
+					pre.forEach(function (prefix) {
+						prefixedProp = prefix + prop;
+
+						if (prefixedProp in div) {
+							prop = prefixedProp;
+							throw StopIteration;
+						}
+					});
+
+					return prefixedProp;
+				}
+			};*/
+
+			if (value != undefined) {
 				this.each(function () {
 					this.style[ Lea.camelize(prop) ] = value;
 				});
@@ -330,6 +409,59 @@
 					return this;
 				}
 
+			}
+		},
+
+		// Get height
+		height: function () {
+			var element = this.elements[0];
+
+			if (element == window) {
+				return window.innerHeight;
+			}
+
+			if (element == document) {
+				return document.body.clientHeight;
+			}
+
+			return element.offsetHeight;
+		},
+
+		// Get width
+		width: function () {
+			var element = this.elements[0];
+			
+			if (element == window) {
+				return window.innerWidth;
+			}
+
+			if (element == document) {
+				return document.body.clientWidth;
+			}
+
+			return element.offsetWidth;
+		},
+
+		// Get scroll offsets
+		scroll: function () {
+			var element = this.elements[0];
+
+			return {
+				'top': element.scrollTop,
+				'left': element.scrollLeft,
+				'width': element.scrollWidth,
+				'height': element.scrollHeight
+			};
+		},
+
+		val: function (value) {
+			if (value != undefined) {
+				this.each(function(){
+					this.value = value;
+				});
+				return this;
+			} else {
+				return this.elements[0].value || "";
 			}
 		},
 
@@ -633,7 +765,8 @@
 			var flag = true;
 
 			var matches = function (element) {
-				return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call(element, selector);
+				//return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call(element, selector);
+				return (element.matches || element.matchesSelector || element.msMatchesSelector || element.webkitMatchesSelector).call(element, selector);
 			};
 
 			this.each(function () {
@@ -677,6 +810,52 @@
 			});
 
 			return this;
+		},
+
+		// [OK] Serialize form
+		serialize: function () {
+			var
+				form   = this.elements[0],
+				serial = {},
+				l, j;
+
+			if (form.nodeName.toLowerCase() !== "form") {
+				return serial;
+			}
+
+			Lea.toArray(form.elements).forEach(function (field) {
+
+				if (field.name && !field.disabled && (["file", "button", "reset", "submit"]).indexOf(field.type) == -1) {
+					if (field.type == "select-multiple") {
+						l = form.elements[i].options.length; 
+						for (j = 0; j < l; j++) {
+							if (field.options[j].selected) {
+								serial[field.name] = field.options[j].value;
+							}
+						}
+					} else if ( (field.type != "checkbox" && field.type != "radio") || field.checked) {
+						serial[field.name] = field.value;
+					}
+				}
+
+			});
+
+			return serial;
+		},
+
+		submit: function (options) {
+			var form = this.elements[0];
+
+			if (form.nodeName.toLowerCase() !== "form") {
+				return false;
+			}
+
+			options = Lea.extend({
+				method: form.method || "GET",
+				data: this.serialize()
+			}, options || {});
+
+			return Lea.ajax( form.action || "#", options );
 		}
 	};
 
