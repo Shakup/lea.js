@@ -25,6 +25,7 @@
     "src",
     "test",
     "Gruntfile.js",
-    "package.json"
+    "package.json",
+    "bower.json"
   ]
 }
