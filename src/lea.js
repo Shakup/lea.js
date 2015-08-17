@@ -1,27 +1,10 @@
-(function (factory) {
-
-	var Lea = new factory();
-
-	/* ==========================================================================
-	   AMD Compliant For Use With RequireJS
-	   ========================================================================== */
-
-	if (typeof define === "function" && define.amd) {
-		define([], Lea);
-	//} else if (module != undefined && module.exports) {
-	//	module.exports = Lea;
-	} else {
-		window.Lea = window.$ = Lea;
-	}
-
-}(function () {
+(function (window) {
 
 	"use strict";
 
 	if (typeof StopIteration == undefined) {
 		var StopIteration = new Error("StopIteration");
 	}
-
 
 
 	/* ==========================================================================
@@ -60,7 +43,6 @@
 	};
 
 
-
 	/* ==========================================================================
 	   About informations
 	   ========================================================================== */	
@@ -69,7 +51,6 @@
 		version  : "{{version}}",
 		homepage : "{{homepage}}"
 	};
-
 
 
 	/* ==========================================================================
@@ -364,6 +345,7 @@
 		};
 	};
 
+
 	/* ==========================================================================
 	   Methods
 	   ========================================================================== */
@@ -377,14 +359,14 @@
 
 		// Loop on each elements
 		each: function (action) {
-			var response;
+			var response, err = new Error("Break");
 
 			try {
 				this.elements.forEach(function (element, index) {
 					response = action.call(element, element, index);
-					if (response === false) throw StopIteration;
+					if (response === false) throw err;
 				});
-			} catch(error) { if (error != StopIteration) throw error; }
+			} catch(error) { if (error != err) throw error; }
 
 			return this;
 		},
@@ -900,8 +882,18 @@
 		}
 	};
 
+	window.Lea = window.$ = Lea;
+
+
+	/* ==========================================================================
+	   AMD Compliant For Use With RequireJS
+	   ========================================================================== */
+
+	if (typeof define === "function" && define.amd) {
+		define("lea", [], function() { return Lea; });
+	}
+
 	console.info("Powered by Lea.js" + "\n" + "Version: " + Lea.about.version + "\n" + "Homepage:" + Lea.about.homepage);
 
 	return Lea;
-
-}));
+})(window);

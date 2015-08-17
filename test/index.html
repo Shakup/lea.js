@@ -7,6 +7,7 @@
 	<title>Lea.js</title>
 	<link rel="stylesheet" href="assets/css/bootstrap.min.css">
 	<link rel="stylesheet" href="assets/css/test.css">
+	<script data-main="assets/js/index" src="assets/js/require.js"></script>
 	<style type="text/css">
 		#obj{
 			position: absolute;
@@ -139,23 +140,8 @@
 		</div>
 	</div>
 
-	<script src="../src/lea.js"></script>
-	<script>
-
-		function the_event(e){
-			console.log( this.src );
-			console.log( $(this).data('info') );
-		};
-
-		$('#btnTrigger').click(function(e){
-			$('img').trigger('click');
-		});
-
-		$('#btnRemove').click(function(e){
-			$('img')
-				.off( 'click', the_event )
-				.removeData( 'info' );
-		});
-	</script>
+<script>
+	requirejs(["main"]);
+</script>
 </body>
 </html>
