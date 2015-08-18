@@ -1,7 +1,7 @@
 {
   "name": "lea.js",
-  "version": "0.0.1",
-  "description": "A Tiny Javascript Framework For Modern Browsers (And Developers)",
+  "version": "1.0.0",
+  "description": "A tiny JavaScript framework for modern browsers (and developers)",
   "main": "dist/lea.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,7 +18,7 @@
     "modern"
   ],
   "author": "Sébastien Decamme <sebastien.decamme@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Shakup/lea.js/issues"
   },

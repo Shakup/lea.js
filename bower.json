@@ -1,11 +1,11 @@
 {
   "name": "lea.js",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "homepage": "https://github.com/Shakup/lea.js",
   "authors": [
     "Sébastien Decamme <sebastien.decamme@gmail.com>"
   ],
-  "description": "A Tiny Javascript Framework For Modern Browsers (And Developers)",
+  "description": "A tiny JavaScript framework for modern browsers (and developers)",
   "main": "dist/lea.js",
   "moduleType": [
     "amd"
