@@ -1,0 +1,9 @@
+"**/.*",
+"node_modules",
+"bower_components",
+"src",
+"test",
+"doc",
+"Gruntfile.js",
+"package.json",
+"bower.json"
