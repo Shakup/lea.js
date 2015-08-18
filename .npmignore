@@ -1,6 +1,7 @@
 "**/.*",
 "node_modules",
 "bower_components",
+"logo",
 "src",
 "test",
 "doc",

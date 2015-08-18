@@ -25,6 +25,7 @@
     "src",
     "test",
     "doc",
+    "logo",
     "Gruntfile.js",
     "package.json",
     "bower.json"
