@@ -9,7 +9,8 @@ define(["lea"], function($) {
 		// Send form via ajax
 		$(this)
 			.submit({json: true})
-			.success(function (response) {
+			.success(function (response, xhr) {
+				console.log(xhr);
 				alert( response.status );
 			});
 
