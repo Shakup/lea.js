@@ -151,10 +151,6 @@
 						elt.innerHTML = val;
 					break;
 
-					case "text":
-						elt.innerText = val;
-					break;
-
 					case "class":
 						elt.classList.add(val);
 					break;
@@ -244,14 +240,13 @@
 
 			this.transport.onreadystatechange = function () {
 				if (this.readyState == 4) {
-					var response = _this.options.json ? JSON.parse(this.responseText) : this.responseText;
+					_this.options.complete.call( _this, this );
 					
-					_this.options.complete.call( _this, response );
-
 					if (this.status == 200 || this.status === 0) {
-						_this.options.success.call( _this, response );
+						var response = _this.options.json ? JSON.parse(this.responseText) : this.responseText;
+						_this.options.success.call( _this, response, this );
 					} else {
-						_this.options.error.call( _this, response );
+						_this.options.error.call( _this, response, this );
 					}
 				}
 			};
