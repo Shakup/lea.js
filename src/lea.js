@@ -230,7 +230,7 @@
 				send: true,
 				async: true,
 				data: {},
-				json: false,
+				withCredentials: false,
 				contentType: "application/x-www-form-urlencoded"
 			}, options || {});
 
@@ -243,13 +243,26 @@
 					_this.options.complete.call( _this, this );
 					
 					if (this.status == 200 || this.status === 0) {
-						var response = _this.options.json ? JSON.parse(this.responseText) : this.responseText;
+
+						var
+							responseContentType = this.getResponseHeader('Content-Type'),
+							response;
+
+						if (responseContentType && responseContentType.indexOf('application/json') > -1) {
+							response = JSON.parse(this.responseText);
+						} else {
+							response = this.responseText;
+						}
+						
 						_this.options.success.call( _this, response, this );
+
 					} else {
 						_this.options.error.call( _this, response, this );
 					}
 				}
 			};
+
+			this.transport.withCredentials = this.options.withCredentials;
 
 			this.transport.open(this.options.method, url, this.options.async);
 
