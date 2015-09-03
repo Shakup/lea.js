@@ -144,7 +144,7 @@
 			Lea.forEach(attr || {}, function (key, val) {
 				switch(key.toLowerCase()) {
 					case "style": 
-						elt = $(elt).css(val).get(0);
+						elt = Lea(elt).css(val).get(0);
 					break;
 
 					case "html": 
@@ -219,8 +219,8 @@
 
 		this.httpRequest = function () {
 			var
-				cb    = (function(response){}).bind(this),
-				_this = this;
+				cb   = (function(response){}).bind(this),
+				self = this;
 
 			this.options = Lea.extend({
 				method: "GET",
@@ -240,7 +240,7 @@
 
 			this.transport.onreadystatechange = function () {
 				if (this.readyState == 4) {
-					_this.options.complete.call( _this, this );
+					self.options.complete.call( self, this );
 					
 					if (this.status == 200 || this.status === 0) {
 
@@ -254,10 +254,10 @@
 							response = this.responseText;
 						}
 						
-						_this.options.success.call( _this, response, this );
+						self.options.success.call( self, response, this );
 
 					} else {
-						_this.options.error.call( _this, response, this );
+						self.options.error.call( self, response, this );
 					}
 				}
 			};
@@ -270,10 +270,10 @@
 				this.transport.setRequestHeader("Content-Type", this.options.contentType);
 				
 				Lea.forEach(this.options.data, function (key, val) {
-					if (_this.parameters.length) {
-						_this.parameters += "&";
+					if (self.parameters.length) {
+						self.parameters += "&";
 					}
-					_this.parameters += encodeURIComponent(key) + "=" + encodeURIComponent(val);
+					self.parameters += encodeURIComponent(key) + "=" + encodeURIComponent(val);
 				});
 			}
 
@@ -393,12 +393,12 @@
 
 		// Get the first element
 		first: function () {
-			return $(this.hasElements() ? this.get(0) : []);
+			return Lea(this.hasElements() ? this.get(0) : []);
 		},
 
 		// Get the last element
 		last: function () {
-			return $(this.hasElements() ? this.get(this.elements.length - 1) : []);
+			return Lea(this.hasElements() ? this.get(this.elements.length - 1) : []);
 		},
 
 		// Get computed style or set style
@@ -521,7 +521,7 @@
 		// [OK] Toggle class
 		toggleClass: function (klass) {
 			this.each(function () {
-				var $elt = $(this);
+				var $elt = Lea(this);
 				if( $elt.hasClass(klass) ) {
 					$elt.removeClass(klass);
 				} else {
@@ -730,7 +730,7 @@
 				}
 			});
 			
-			return new Lea(parents);
+			return Lea(parents);
 		},
 
 		// [OK] Find elements
@@ -740,10 +740,8 @@
 			this.elements.forEach(function (element) {
 				found = found.concat( Lea.toArray(element.querySelectorAll(selector)) );
 			});
-			
-			this.elements = found;
 
-			return this;
+			return Lea(found);
 		},
 
 		// [OK] Get previous element
@@ -757,9 +755,7 @@
 				}
 			});
 
-			this.elements = previous;
-
-			return this;
+			return Lea(previous);
 		},
 
 		// [OK] Get next element
@@ -772,10 +768,8 @@
 					next.push(nex);
 				}
 			});
-			
-			this.elements = next;
 
-			return this;
+			return Lea(next);
 		},
 
 		// [OK] Clear content
@@ -794,7 +788,7 @@
 				});
 				return this;
 			} else {
-				return this.hasElements ? this.elements[0].innerText : "";
+				return this.hasElements() ? this.elements[0].innerText : "";
 			}
 		},
 
