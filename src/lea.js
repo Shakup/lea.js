@@ -1,52 +1,52 @@
-(function (window) {
+(function (factory) {
+
+	if ( typeof define === "function" && define.amd ) {
+		define( "lea", [], function() { return factory(); } );
+	} else {
+		factory();
+	}
+
+})(function () {
 
 	"use strict";
-
 
 	/* ==========================================================================
 	   Lea.js constructor
 	   ========================================================================== */
 
 	var Lea = function (query, context) {
+		if ( !(this instanceof Lea) ) {
+			return new Lea(query, context);
+		}
+
+		var self = this;
+
 		if (context == undefined) {
 			context = window.document;
 		}
 
-		if (this == undefined || this === window) {
-			return new Lea(query, context);
-		}
+		this.elements = [];
 
 		if (query == null) {
-			this.elements = [];
 			return this;
 		}
 
-		if (Lea.type(query) !== "array") {
+		if ( Lea.type(query) !== "array" ) {
 			query = [query];
 		}
 
-		this.elements = [];
-
-		query.forEach((function (obj) {
-			if (Lea.isNode(obj) || obj === window || obj === document) {
-				this.elements.push(obj);	
-			} else if (Lea.type(obj) === "string") {
-				this.elements = this.elements.concat(Lea.toArray(context.querySelectorAll(obj)));
+		query.forEach(function (obj) {
+			if ( Lea.isNode(obj) || obj === window || obj === document ) {
+				self.elements.push(obj);	
+			} else if ( Lea.type(obj) === "string" ) {
+				self.elements = self.elements.concat(Lea.toArray(context.querySelectorAll(obj)));
 			}
-		}).bind(this));
+		});
 
 		return this;
 	};
 
-
-	/* ==========================================================================
-	   About informations
-	   ========================================================================== */	
-
-	Lea.about = {
-		version  : "{{version}}",
-		homepage : "{{homepage}}"
-	};
+	Lea.version = "{{version}}";
 
 
 	/* ==========================================================================
@@ -60,10 +60,10 @@
 
 	// Execute function on DOM ready
 	Lea.ready = function (fn) {
-		if (document.readyState != "loading") {
+		if ( document.readyState != "loading" ) {
 			fn();
 		} else {
-			document.addEventListener("DOMContentLoaded", fn);
+			document.addEventListener( "DOMContentLoaded", fn );
 		}
 	};
 
@@ -71,11 +71,11 @@
 	Lea.extend = function (out) {
 		var out = out || {};
 
-		for(var i = 1; i < arguments.length; i++) {
+		for ( var i = 1; i < arguments.length; i++ ) {
 			if (!arguments[i]) continue;
 
-			for(var key in arguments[i]) {
-				if (arguments[i].hasOwnProperty(key)) {
+			for ( var key in arguments[i] ) {
+				if ( arguments[i].hasOwnProperty(key) ) {
 					out[key] = arguments[i][key];
 				}
 			}
@@ -85,13 +85,13 @@
 	};
 
 	// [OK] Convert collection to array
-	Lea.toArray = function (coll){
-		return Array.prototype.slice.call(coll, 0);
+	Lea.toArray = function (coll) {
+		return Array.prototype.slice.call( coll, 0 );
 	};
 
 	// [OK] Get object type
 	Lea.type = function (obj) {
-		return Object.prototype.toString.call(obj).replace(/^\[object (.+)\]$/, "$1").toLowerCase();
+		return Object.prototype.toString.call(obj).replace( /^\[object (.+)\]$/, "$1" ).toLowerCase();
 	};
 
 	// [OK] Check Element
@@ -101,26 +101,27 @@
 
 	// [OK] Camelize
 	Lea.camelize = function (str) {
-		if (str.charAt(0) == "-") {
+		if ( str.charAt(0) == "-" ) {
 			str = str.slice(1);
 		}
-		return str.replace(/-\D/g, function (match) {
+
+		return str.replace( /-\D/g, function (match) {
 			return match.charAt(1).toUpperCase();
-		});
+		} );
 	};
 
 	// [OK] Dashize 
 	Lea.dashize = function (str) {
-		return str.replace(/[A-Z]/g, function (match) {
-			return ("-" + match.charAt(0).toLowerCase());
-		});
+		return str.replace( /[A-Z]/g, function (match) {
+			return ( "-" + match.charAt(0).toLowerCase() );
+		} );
 	};
 
 	// [OK] Parse object
 	Lea.forEach = function (obj, fn, context) {
-		for(var key in obj) {
+		for ( var key in obj ) {
 			if (obj.hasOwnProperty(key)) {
-				fn.call(context || obj, key, obj[key]);
+				fn.call( context || obj, key, obj[key] );
 			}
 		}
 	};
@@ -133,6 +134,7 @@
 
 		var div = document.createElement("div");
 		div.innerHTML = str;
+		
 		return Array.prototype.slice.call(div.childNodes, 0);
 	};
 
@@ -141,7 +143,7 @@
 		var elt = document.createElement(tag);
 
 		if (attr != undefined) {
-			Lea.forEach(attr || {}, function (key, val) {
+			Lea.forEach( attr || {}, function (key, val) {
 				switch(key.toLowerCase()) {
 					case "style": 
 						elt = Lea(elt).css(val).get(0);
@@ -171,8 +173,9 @@
 						elt.setAttribute(key, val);
 					break;
 				}
-			});
+			} );
 		}
+
 		return elt;
 	};
 
@@ -199,7 +202,7 @@
 	};
 
 	// Get URL parameters
-	Lea.getUrlParameters = function (parameter) {
+	/*Lea.getUrlParameters = function (parameter) {
 		var
 			regex = /([^&=]+)=?([^&]*)/g,
 			match, store = {},
@@ -212,7 +215,7 @@
 		}
 
 		return parameter != undefined ? store[parameter] || null : store;
-	};
+	};*/
 
 	// Ajax
 	Lea.ajax = function (url, options) {
@@ -240,15 +243,16 @@
 
 			this.transport.onreadystatechange = function () {
 				if (this.readyState == 4) {
+
 					self.options.complete.call( self, this );
 					
 					if (this.status == 200 || this.status === 0) {
 
 						var
-							responseContentType = this.getResponseHeader('Content-Type'),
+							responseContentType = this.getResponseHeader("Content-Type"),
 							response;
 
-						if (responseContentType && responseContentType.indexOf('application/json') > -1) {
+						if (responseContentType && responseContentType.indexOf("application/json") > -1) {
 							response = JSON.parse(this.responseText);
 						} else {
 							response = this.responseText;
@@ -259,6 +263,7 @@
 					} else {
 						self.options.error.call( self, response, this );
 					}
+
 				}
 			};
 
@@ -266,20 +271,22 @@
 
 			this.transport.open(this.options.method, url, this.options.async);
 
-			if (this.options.method == "POST") {
-				this.transport.setRequestHeader("Content-Type", this.options.contentType);
+			this.transport.setRequestHeader( "X-Requested-With", "XMLHttpRequest" );
+
+			if ( this.options.method == "POST" ) {
+				this.transport.setRequestHeader( "Content-Type", this.options.contentType );
 				
-				Lea.forEach(this.options.data, function (key, val) {
+				Lea.forEach( this.options.data, function (key, val) {
 					if (self.parameters.length) {
 						self.parameters += "&";
 					}
 					self.parameters += encodeURIComponent(key) + "=" + encodeURIComponent(val);
-				});
+				} );
 			}
 
 			if (this.options.send) {
 				this.send();
-			};
+			}
 		};
 
 		this.httpRequest.prototype = {
@@ -310,12 +317,12 @@
 
 	// Ajax Get
 	Lea.get = function (url, options) {
-		return Lea.ajax( url, Lea.extend(options || {}, {method: "GET"}) );
+		return Lea.ajax( url, Lea.extend( options || {}, {method: "GET"} ) );
 	};
 
 	// Ajax Post
 	Lea.post = function (url, data, options) {
-		return Lea.ajax( url, Lea.extend(options || {}, {method: "POST", data: data || {}}) );
+		return Lea.ajax( url, Lea.extend( options || {}, {method: "POST", data: data || {}} ) );
 	};
 
 	// [OK] Debounce
@@ -330,13 +337,13 @@
 			clearTimeout(timer);
 			
 			timer = setTimeout(function () {
-				fn.apply(context, args);
+				fn.apply( context, args );
 			}, delay);
 		}
 	};
 
 	// [OK] Throttle
-	Lea.throttle = function(fn, delay) {
+	Lea.throttle = function (fn, delay) {
 		var last, timer;
 		
 		return function () {
@@ -345,17 +352,17 @@
 				now     = +new Date(),
 				args    = arguments;
 			
-			if (last && now < last + delay) {
+			if ( last && now < last + delay ) {
 				
 				clearTimeout(timer);
 				timer = setTimeout(function () {
 					last = now;
-					fn.apply(context, args);
+					fn.apply( context, args );
 				}, delay);
 
 			} else {
 				last = now;
-				fn.apply(context, args);
+				fn.apply( context, args );
 			}
 		};
 	};
@@ -376,12 +383,10 @@
 		each: function (action) {
 			var response, err = new Error("Break");
 
-			try {
-				this.elements.forEach(function (element, index) {
-					response = action.call(element, element, index);
-					if (response === false) throw err;
-				});
-			} catch(error) { if (error != err) throw error; }
+			this.elements.forEach(function (element, index) {
+				response = action.call( element, element, index );
+				if (response === false) throw err;
+			});
 
 			return this;
 		},
@@ -393,34 +398,39 @@
 
 		// Get the first element
 		first: function () {
-			return Lea(this.hasElements() ? this.get(0) : []);
+			return new Lea(this.hasElements() ? this.get(0) : []);
 		},
 
 		// Get the last element
 		last: function () {
-			return Lea(this.hasElements() ? this.get(this.elements.length - 1) : []);
+			return new Lea( this.hasElements() ? this.get(this.elements.length - 1) : [] );
 		},
 
 		// Get computed style or set style
 		css: function (prop, value) {
 
 			if (value != undefined) {
+				
 				this.each(function () {
 					this.style[ Lea.camelize(prop) ] = value;
 				});
+
 				return this;
 
 			} else {
 
-				if (Lea.type(prop) === "string") {
-					return window.getComputedStyle(this.get(0), null)[ Lea.dashize(prop) ];
-				} else if (Lea.type(prop) === "object") {
+				if ( Lea.type(prop) === "string" ) {
+					return window.getComputedStyle( this.get(0), null )[ Lea.dashize(prop) ];
+				} else if ( Lea.type(prop) === "object" ) {
+
 					this.each(function () {
 						var element = this;
-						Lea.forEach(prop, function (key, val) {
+
+						Lea.forEach( prop, function (key, val) {
 							element.style[ Lea.camelize(key) ] = val;
-						});
+						} );
 					});
+
 					return this;
 				}
 
@@ -503,31 +513,38 @@
 			this.each(function () {
 				this.classList.remove(klass);
 			});
+
 			return this;
 		},
 
 		// [OK] Check class exists
 		hasClass: function (klass) {
 			var bool = true;
+
 			this.elements.forEach(function (element) {
-				if (!element.classList.contains(klass)) {
+				if ( !element.classList.contains(klass) ) {
 					bool = false;
 					return;
 				}
 			});
+
 			return bool;
 		},
 
 		// [OK] Toggle class
 		toggleClass: function (klass) {
 			this.each(function () {
-				var $elt = Lea(this);
+				this.classList.toggle(klass);
+				/*var $elt = Lea(this);
+
 				if( $elt.hasClass(klass) ) {
 					$elt.removeClass(klass);
 				} else {
 					$elt.addClass(klass);
-				}
+				}*/
+
 			});
+
 			return this;
 		},
 
@@ -567,37 +584,54 @@
 			if (src == undefined) {
 				return this.get(0).innerHTML;
 			} else {
+
 				this.each(function () {
 					this.innerHTML = src;
 				});
+
 				return this;
+
 			}
 		},
 
 		// Add event
-		on: function (event, fn) {
-			this.each(function () {
-				this.addEventListener(event, fn, false);
+		on: function (events, fn) {
+			var tabevts = events.split(" ");
+
+			this.each(function (element) {
+				tabevts.forEach(function (event) {
+					element.addEventListener(event, fn, false);
+				});
 			}, false);
+
 			return this;
 		},
 
 		// Remove event
-		off: function (event, fn) {
-			this.each(function (){
-				this.removeEventListener(event, fn, false);
+		off: function (events, fn) {
+			var tabevts = events.split(" ");
+
+			this.each(function (element) {
+				tabevts.forEach(function (event) {
+					element.removeEventListener(event, fn, false);
+				});
 			});
+
 			return this;
 		},
 
 		// [OK] Live event
-		delegate: function (selector, event, fn) {
-			this.each(function (){
-				this.addEventListener(event, function (evt) {
-					if ( Lea(evt.target).is(selector) ) {
-						fn.call(evt.target, event);
-					}
-				}, false );
+		delegate: function (selector, events, fn) {
+			var tabevts = events.split(" ");
+
+			this.each(function (element) {
+				tabevts.forEach(function (event) {
+					element.addEventListener(event, function (evt) {
+						if ( Lea(evt.target).is(selector) ) {
+							fn.call(evt.target, event);
+						}
+					}, false );
+				});
 			});
 
 			return this;
@@ -606,6 +640,7 @@
 		// Fire event
 		trigger: function (event){
 			var evt = document.createEvent("HTMLEvents");
+			
 			evt.initEvent(event, true, true);
 
 			this.each(function () {
@@ -623,10 +658,13 @@
 		// Set or get attribute
 		attr: function (attr, val){
 			if (val != undefined) {
+
 				this.each(function () {
 					this.setAttribute(attr, val);
 				});
+
 				return this;
+
 			} else {
 				return this.elements[0].getAttribute(attr);
 			}
@@ -637,16 +675,20 @@
 			this.each(function () {
 				this.removeAttribute(attr);
 			});
+
 			return this;
 		},
 
 		// [OK] Set or get data
 		data: function (data, value) {
 			if (value != undefined) {
+
 				this.each(function () {
 					this.dataset[data] = value;
 				});
+
 				return this;
+
 			} else {
 				return this.get(0).dataset[data];
 			}
@@ -657,6 +699,7 @@
 			this.each(function () {
 				delete this.dataset[data];
 			});
+
 			return this;
 		},
 
@@ -668,38 +711,48 @@
 		// [OK] Append element 
 		append: function (obj) {
 			this.each(function (element) {
+
 				if (Lea.isNode(obj)) {
 					element.appendChild(obj);
 				} else {
 					var nodes = Lea.str2Node(obj);
+
 					nodes.forEach(function (node) {
 						element.appendChild(node);
 					});
 				}
+
 			});
+
 			return this;
 		},
 
 		// [OK] Prepend element
 		prepend: function (obj) {
 			this.each(function (element) {
+
 				if (Lea.isNode(obj)) {
 					element.insertBefore(obj, element.firstChild);
 				} else {
+
 					var nodes = Lea.str2Node(obj);
+
 					nodes.forEach(function (node) {
 						element.insertBefore(node, element.firstChild);
 					});
+
 				}
+
 			});
 			return this;
 		},
 
 		// [OK] Insert element before an other element
-		before: function (obj){
+		before: function (obj) {
 			this.each(function () {
 				this.insertAdjacentHTML("beforebegin", obj);
 			});
+
 			return this;
 		},
 
@@ -708,6 +761,7 @@
 			this.each(function () {
 				this.insertAdjacentHTML("afterend", obj);
 			});
+
 			return this;
 		},
 
@@ -716,6 +770,7 @@
 			this.each(function () {
 				this.parentNode.removeChild(this);
 			});
+
 			return this;
 		},
 
@@ -730,7 +785,7 @@
 				}
 			});
 			
-			return Lea(parents);
+			return new Lea(parents);
 		},
 
 		// [OK] Find elements
@@ -741,7 +796,7 @@
 				found = found.concat( Lea.toArray(element.querySelectorAll(selector)) );
 			});
 
-			return Lea(found);
+			return new Lea(found);
 		},
 
 		// [OK] Get previous element
@@ -755,7 +810,7 @@
 				}
 			});
 
-			return Lea(previous);
+			return new Lea(previous);
 		},
 
 		// [OK] Get next element
@@ -769,7 +824,7 @@
 				}
 			});
 
-			return Lea(next);
+			return new Lea(next);
 		},
 
 		// [OK] Clear content
@@ -777,16 +832,20 @@
 			this.each(function () {
 				this.innerHTML = "";
 			});
+
 			return this;
 		},
 
 		// [OK] Get or set text content
 		text: function (txt) {
 			if (txt != undefined) {
+
 				this.each(function () {
 					this.textContent = txt;
 				});
+
 				return this;
+
 			} else {
 				return this.hasElements() ? this.elements[0].innerText : "";
 			}
@@ -794,12 +853,11 @@
 
 		// [OK] Check comparaison
 		is: function (selector) {
-			var flag = true;
-
-			var matches = function (element) {
-				//return (element.matches || element.matchesSelector || element.msMatchesSelector || element.mozMatchesSelector || element.webkitMatchesSelector || element.oMatchesSelector).call(element, selector);
-				return (element.matches || element.matchesSelector || element.msMatchesSelector || element.webkitMatchesSelector).call(element, selector);
-			};
+			var
+				flag    = true,
+				matches = function (element) {
+					return (element.matches || element.matchesSelector || element.msMatchesSelector || element.webkitMatchesSelector).call(element, selector);
+				};
 
 			this.each(function () {
 				flag = matches(this);
@@ -860,11 +918,13 @@
 				if (field.name && !field.disabled && (["file", "button", "reset", "submit"]).indexOf(field.type) == -1) {
 					if (field.type == "select-multiple") {
 						l = form.elements[i].options.length; 
+						
 						for (j = 0; j < l; j++) {
 							if (field.options[j].selected) {
 								serial[field.name] = field.options[j].value;
 							}
 						}
+						
 					} else if ( (field.type != "checkbox" && field.type != "radio") || field.checked) {
 						serial[field.name] = field.value;
 					}
@@ -891,18 +951,10 @@
 		}
 	};
 
+	console.info("Powered by lea.js v" + Lea.version);
+
 	window.Lea = window.$ = Lea;
 
-
-	/* ==========================================================================
-	   AMD Compliant For Use With RequireJS
-	   ========================================================================== */
-
-	if (typeof define === "function" && define.amd) {
-		define("lea", [], function() { return Lea; });
-	}
-
-	console.info("Powered by Lea.js" + "\n" + "Version: " + Lea.about.version + "\n" + "Homepage:" + Lea.about.homepage);
-
 	return Lea;
-})(window);
+
+});
