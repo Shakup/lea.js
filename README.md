@@ -14,7 +14,7 @@ Just click on the following link to download the latest version:
 You can also install **lea.js** using [Bower](http://bower.io):
 
 ```
-bower install lea.js
+bower install lea
 ```
 
 
@@ -23,7 +23,7 @@ bower install lea.js
 You can also install **lea.js** using [npm](https://www.npmjs.com/):
 
 ```
-npm install lea.js
+npm install lea
 ```
 
 
