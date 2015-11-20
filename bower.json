@@ -1,6 +1,6 @@
 {
-  "name": "lea.js",
-  "version": "1.0.5",
+  "name": "lea",
+  "version": "1.1.0",
   "homepage": "https://github.com/Shakup/lea.js",
   "authors": [
     "Sébastien Decamme <sebastien.decamme@gmail.com>"
@@ -23,9 +23,6 @@
     "node_modules",
     "bower_components",
     "src",
-    "test",
-    "doc",
-    "logo",
     "Gruntfile.js",
     "package.json",
     "bower.json"

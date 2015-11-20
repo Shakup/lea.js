@@ -3,7 +3,7 @@
 	if ( typeof define === "function" && define.amd ) {
 		define( "lea", [], factory );
 	} else if ( typeof exports === "object" ) {
-		factory();
+		module.exports = factory();
 	} else {
 		root.Lea = root.$ = factory();
 	}
