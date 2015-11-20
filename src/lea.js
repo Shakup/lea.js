@@ -1,9 +1,11 @@
-(function (factory) {
+(function (factory, root) {
 
 	if ( typeof define === "function" && define.amd ) {
-		define( "lea", [], function() { return factory(); } );
-	} else {
+		define( "lea", [], factory );
+	} else if ( typeof exports === "object" ) {
 		factory();
+	} else {
+		root.Lea = root.$ = factory();
 	}
 
 })(function () {
@@ -74,11 +76,14 @@
 		for ( var i = 1; i < arguments.length; i++ ) {
 			if (!arguments[i]) continue;
 
-			for ( var key in arguments[i] ) {
+			Lea.parse(arguments[i], function (key, val) {
+				out[key] = val;
+			});
+			/*for ( var key in arguments[i] ) {
 				if ( arguments[i].hasOwnProperty(key) ) {
 					out[key] = arguments[i][key];
 				}
-			}
+			}*/
 		}
 
 		return out;
@@ -99,8 +104,8 @@
 		return obj instanceof HTMLElement;
 	};
 
-	// [OK] Camelize
-	Lea.camelize = function (str) {
+	// [OK] Camelcase
+	Lea.camelcase = function (str) {
 		if ( str.charAt(0) == "-" ) {
 			str = str.slice(1);
 		}
@@ -110,15 +115,15 @@
 		} );
 	};
 
-	// [OK] Dashize 
-	Lea.dashize = function (str) {
+	// [OK] Dash 
+	Lea.dash = function (str) {
 		return str.replace( /[A-Z]/g, function (match) {
 			return ( "-" + match.charAt(0).toLowerCase() );
 		} );
 	};
 
 	// [OK] Parse object
-	Lea.forEach = function (obj, fn, context) {
+	Lea.parse = function (obj, fn, context) {
 		for ( var key in obj ) {
 			if (obj.hasOwnProperty(key)) {
 				fn.call( context || obj, key, obj[key] );
@@ -138,12 +143,54 @@
 		return Array.prototype.slice.call(div.childNodes, 0);
 	};
 
+	Lea.cookie = {
+		get: function (key) {
+			if (!key) { return null; }
+			return decodeURIComponent( document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1") ) || null;
+		},
+		set: function (key, value, vEnd, sPath, sDomain, bSecure) {
+			if (!key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key)) { return false; }
+			var sExpires = "";
+			if (vEnd) {
+				switch (vEnd.constructor) {
+					case Number:
+						sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+					break;
+					case String:
+						sExpires = "; expires=" + vEnd;
+					break;
+					case Date:
+						sExpires = "; expires=" + vEnd.toUTCString();
+					break;
+				}
+			}
+			document.cookie = encodeURIComponent(key) + "=" + encodeURIComponent(value) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+			return true;
+		},
+		remove: function (key, sPath, sDomain) {
+			if (!this.exists(key)) { return false; }
+			document.cookie = encodeURIComponent(key) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+			return true;
+		},
+		exists: function (key) {
+			if (!key) { return false; }
+			return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+		},
+		keys: function () {
+			var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+			for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) {
+				aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]);
+			}
+			return aKeys;
+		}
+	};
+
 	// [OK] Create Html Element 
 	Lea.create = function (tag, attr) {
 		var elt = document.createElement(tag);
 
 		if (attr != undefined) {
-			Lea.forEach( attr || {}, function (key, val) {
+			Lea.parse( attr || {}, function (key, val) {
 				switch(key.toLowerCase()) {
 					case "style": 
 						elt = Lea(elt).css(val).get(0);
@@ -158,13 +205,13 @@
 					break;
 
 					case "event":
-						Lea.forEach(val, function (evt, fn) {
+						Lea.parse(val, function (evt, fn) {
 							elt.addEventListener(evt, fn, false);
 						});
 					break;
 
 					case "data":
-						Lea.forEach(val, function (_key, _val) {
+						Lea.parse(val, function (_key, _val) {
 							elt.dataset[_key] = _val;
 						});
 					break;
@@ -201,35 +248,18 @@
 		return !Lea.device("desktop");
 	};
 
-	// Get URL parameters
-	/*Lea.getUrlParameters = function (parameter) {
-		var
-			regex = /([^&=]+)=?([^&]*)/g,
-			match, store = {},
-			haystack = window.location.search || window.location.hash;
-
-		haystack = haystack.substring(haystack.indexOf("?") + 1, haystack.length);
-
-		while ((match = regex.exec(haystack))) {
-			store[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
-		}
-
-		return parameter != undefined ? store[parameter] || null : store;
-	};*/
-
 	// Ajax
-	Lea.ajax = function (url, options) {
-
-		this.httpRequest = function () {
+	Lea.ajax = function (_url, _options) {
+		function httpRequest (url, options) {
 			var
 				cb   = (function(response){}).bind(this),
 				self = this;
 
 			this.options = Lea.extend({
 				method: "GET",
-				complete: cb,
-				success: cb,
-				error: cb,
+				always: cb,
+				then: cb,
+				catch: cb,
 				send: true,
 				async: true,
 				data: {},
@@ -244,7 +274,7 @@
 			this.transport.onreadystatechange = function () {
 				if (this.readyState == 4) {
 
-					self.options.complete.call( self, this );
+					self.options.always.call( self, this );
 					
 					if (this.status == 200 || this.status === 0) {
 
@@ -258,10 +288,10 @@
 							response = this.responseText;
 						}
 						
-						self.options.success.call( self, response, this );
+						self.options.then.call( self, response, this );
 
 					} else {
-						self.options.error.call( self, response, this );
+						self.options.catch.call( self, this );
 					}
 
 				}
@@ -275,8 +305,8 @@
 
 			if ( this.options.method == "POST" ) {
 				this.transport.setRequestHeader( "Content-Type", this.options.contentType );
-				
-				Lea.forEach( this.options.data, function (key, val) {
+
+				Lea.parse( this.options.data, function (key, val) {
 					if (self.parameters.length) {
 						self.parameters += "&";
 					}
@@ -289,17 +319,17 @@
 			}
 		};
 
-		this.httpRequest.prototype = {
-			complete: function (cb) {
-				this.options.complete = cb.bind(this);
+		httpRequest.prototype = {
+			always: function (cb) {
+				this.options.always = cb.bind(this);
 				return this;
 			},
-			success: function (cb) {
-				this.options.success = cb.bind(this);
+			then: function (cb) {
+				this.options.then = cb.bind(this);
 				return this;
 			},
-			error: function (cb) {
-				this.options.error = cb.bind(this);
+			catch: function (cb) {
+				this.options.catch = cb.bind(this);
 				return this;
 			},
 			send: function () {
@@ -312,7 +342,7 @@
 			}
 		};
 
-		return new this.httpRequest();
+		return new httpRequest(_url, _options);
 	};
 
 	// Ajax Get
@@ -412,7 +442,7 @@
 			if (value != undefined) {
 				
 				this.each(function () {
-					this.style[ Lea.camelize(prop) ] = value;
+					this.style[ Lea.camelcase(prop) ] = value;
 				});
 
 				return this;
@@ -420,14 +450,14 @@
 			} else {
 
 				if ( Lea.type(prop) === "string" ) {
-					return window.getComputedStyle( this.get(0), null )[ Lea.dashize(prop) ];
+					return window.getComputedStyle( this.get(0), null )[ Lea.dash(prop) ];
 				} else if ( Lea.type(prop) === "object" ) {
 
 					this.each(function () {
 						var element = this;
 
-						Lea.forEach( prop, function (key, val) {
-							element.style[ Lea.camelize(key) ] = val;
+						Lea.parse( prop, function (key, val) {
+							element.style[ Lea.camelcase(key) ] = val;
 						} );
 					});
 
@@ -836,21 +866,6 @@
 			return this;
 		},
 
-		// [OK] Get or set text content
-		text: function (txt) {
-			if (txt != undefined) {
-
-				this.each(function () {
-					this.textContent = txt;
-				});
-
-				return this;
-
-			} else {
-				return this.hasElements() ? this.elements[0].innerText : "";
-			}
-		},
-
 		// [OK] Check comparaison
 		is: function (selector) {
 			var
@@ -915,7 +930,7 @@
 
 			Lea.toArray(form.elements).forEach(function (field) {
 
-				if (field.name && !field.disabled && (["file", "button", "reset", "submit"]).indexOf(field.type) == -1) {
+				if (field.name && (["file", "button", "reset", "submit"]).indexOf(field.type) == -1) {
 					if (field.type == "select-multiple") {
 						l = form.elements[i].options.length; 
 						
@@ -944,7 +959,7 @@
 
 			options = Lea.extend({
 				method: form.method || "GET",
-				data: this.serialize()
+				data: Lea(form).serialize()
 			}, options || {});
 
 			return Lea.ajax( form.action || "#", options );
@@ -953,8 +968,8 @@
 
 	console.info("Powered by lea.js v" + Lea.version);
 
-	window.Lea = window.$ = Lea;
+	//window.Lea = window.$ = Lea;
 
 	return Lea;
 
-});
+}, this);
