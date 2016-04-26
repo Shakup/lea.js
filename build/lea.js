@@ -1,23 +1,3 @@
-/*!
- * lea - version 2.0.0 - 2016-03-30
- * Sébastien Decamme <sebastien.decamme@gmail.com>
- */
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    // AMD. Register as an anonymous module unless amdModuleId is set
-    define([], function () {
-      return (factory());
-    });
-  } else if (typeof exports === 'object') {
-    // Node. Does not work with strict CommonJS, but
-    // only CommonJS-like environments that support module.exports,
-    // like Node.
-    module.exports = factory();
-  } else {
-    factory();
-  }
-}(this, function () {
-
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
@@ -784,6 +764,3 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 		module.exports = Lea;
 	}, { "./imports/lea.class": 1 }] }, {}, [2]);
 //# sourceMappingURL=lea.js.map
-
-
-}));

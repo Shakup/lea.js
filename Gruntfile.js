@@ -3,11 +3,9 @@ module.exports = function(grunt){
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 
-		banner: '/*\n' +
+		banner: '/*!\n' +
 			' * <%= pkg.name %> - version <%= pkg.version %> - <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-			' * <%= pkg.description %>\n' +
-			' * Author: <%= pkg.author %>\n' +
-			' * Homepage: <%= pkg.homepage %>\n' +
+			' * <%= pkg.author %>\n' +
 			' */',
 		
 		usebanner: {
@@ -17,25 +15,34 @@ module.exports = function(grunt){
 					banner: '<%= banner %>'
 				},
 				files: {
-					src: ['dist/lea.js']
+					src: ['./dist/*.js']
 				}
 			}
 		},
 
-		replace: {
+		browserify: {
 			dist: {
-				src: ['dist/lea.js'],
-				overwrite: true,
-				replacements: [
-					{
-						from: '{{version}}',
-						to: '<%= pkg.version %>'
-					},
-					{
-						from: '{{homepage}}',
-						to: '<%= pkg.homepage %>'
-					}
-				]
+				files: {
+					'./build/lea.js': ['./src/lea.js']
+				}
+			}
+		},
+
+		babel: {
+			options: {
+				sourceMap: true
+			},
+			dist: {
+				files: {'./build/lea.js': './build/lea.js'}
+			}
+		},
+
+		umd: {
+			all: {
+				options: {
+					src: './build/lea.js',
+					dest: './dist/lea.js'
+				}
 			}
 		},
 
@@ -46,15 +53,15 @@ module.exports = function(grunt){
 			},
 			dist: {
 				files: {
-					'dist/lea.js': ['src/lea.js']
+					'./dist/lea.min.js': ['./dist/lea.js']
 				}
 			}
 		},
 
 		watch: {
 			scripts: {
-				files: ['src/*.js'],
-				tasks: ['uglify','usebanner','replace']
+				files: ['src/lea.js', '!src/_*.js'],
+				tasks: ['browserify', 'babel', 'umd', 'uglify', 'usebanner']
 			}
 		},
 
@@ -62,20 +69,24 @@ module.exports = function(grunt){
 			options: {
 				enabled: true,
 				max_jshint_notifications: 2,
-				title: "Lea.js",
+				title: '<%= pkg.name %>',
 				success: true,
-				duration: 2
+				duration: 1
 			}
 		}
+
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-watch');
-	grunt.loadNpmTasks('grunt-banner');
-	grunt.loadNpmTasks('grunt-text-replace');
 	grunt.loadNpmTasks('grunt-notify');
+	grunt.loadNpmTasks('grunt-banner');
+	grunt.loadNpmTasks('grunt-babel');
+	grunt.loadNpmTasks('grunt-browserify');
+	grunt.loadNpmTasks('grunt-umd');
 
 	grunt.task.run('notify_hooks');
 	
-	grunt.registerTask('default', ['uglify','usebanner','replace']);
+	grunt.registerTask('default', ['browserify', 'babel', 'umd', 'uglify', 'usebanner']);
+
 }
