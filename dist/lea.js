@@ -1,5 +1,5 @@
 /*!
- * lea - version 2.0.0 - 2016-03-30
+ * lea - version 2.0.1 - 2016-04-29
  * Sébastien Decamme <sebastien.decamme@gmail.com>
  */
 (function (root, factory) {
