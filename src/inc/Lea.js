@@ -1,17 +1,13 @@
-'use strict'
-
-const Lea = require('../lea')
-
-class LeaClass {
+export default class Lea {
 
 	constructor (query, context) {
-		if ( Lea.type(query) != 'array' ) query = [query]
+		if ( lea.type(query) != 'array' ) query = [query]
 
 		this.elements = query.map( (obj) => {
 
-			if ( Lea.type(obj) == 'node' || obj === window || obj === document ) {
+			if ( lea.type(obj) == 'node' || obj === window || obj === document ) {
 				return obj
-			} else if ( Lea.type(obj) === 'string' ) {
+			} else if ( lea.type(obj) === 'string' ) {
 				return Array.from( context.querySelectorAll(obj) )
 			} else return null
 			
@@ -126,7 +122,7 @@ class LeaClass {
 		this.each( (element) => {
 			tabevts.forEach( (event) => {
 				element.addEventListener(event, (evt) => {
-					if ( Lea( evt.target ).is(selector) ) fn.call( evt.target, event )
+					if ( lea( evt.target ).is(selector) ) fn.call( evt.target, event )
 				}, false )
 			})
 		})
@@ -179,10 +175,10 @@ class LeaClass {
 	append (obj) {
 		this.each( (element) => {
 
-			if ( Lea.type(obj) == 'node' ) {
+			if ( lea.type(obj) == 'node' ) {
 				element.appendChild(obj)
 			} else {
-				let nodes = Lea.str2Node(obj)
+				let nodes = lea.str2Node(obj)
 				nodes.forEach( (node) => element.appendChild(node) )
 			}
 
@@ -194,10 +190,10 @@ class LeaClass {
 	prepend (obj) {
 		this.each( (element) => {
 
-			if ( Lea.type(obj) == 'node' ) {
+			if ( lea.type(obj) == 'node' ) {
 				element.insertBefore( obj, element.firstChild )
 			} else {
-				let nodes = Lea.str2Node(obj)
+				let nodes = lea.str2Node(obj)
 				nodes.forEach( (node) => element.insertBefore( node, element.firstChild) )
 			}
 
@@ -229,17 +225,17 @@ class LeaClass {
 			if (parent) parents.push(parent)
 		})
 		
-		return Lea(parents)
+		return lea(parents)
 	}
 
 	find (selector) {
 		let found = []
 
 		this.each( (element) => {
-			found = found.concat( Lea.toArray( element.querySelectorAll(selector) ) )
+			found = found.concat( lea.toArray( element.querySelectorAll(selector) ) )
 		})
 
-		return Lea(found)
+		return lea(found)
 	}
 
 	prev () {
@@ -250,7 +246,7 @@ class LeaClass {
 			if (prev) previous.push(prev)
 		})
 
-		return Lea(previous)
+		return lea(previous)
 	}
 
 	next () {
@@ -261,7 +257,7 @@ class LeaClass {
 			if (nex) next.push(nex)
 		})
 
-		return Lea(next)
+		return lea(next)
 	}
 
 	clear () {
@@ -323,7 +319,7 @@ class LeaClass {
 
 		if ( form.nodeName.toLowerCase() !== 'form' ) return serial
 
-		Lea.toArray( form.elements ).forEach( (field) => {
+		lea.toArray( form.elements ).forEach( (field) => {
 
 			if ( field.name && ( ['file', 'button', 'reset', 'submit'] ).indexOf( field.type ) == -1 ) {
 				if ( field.type == 'select-multiple' ) {
@@ -350,14 +346,12 @@ class LeaClass {
 
 		if ( form.nodeName.toLowerCase() !== 'form' ) return false
 
-		options = Lea.extend({
+		options = lea.extend({
 			method: form.method || 'GET',
-			data: Lea(form).serialize()
+			data: lea(form).serialize()
 		}, options || {})
 
-		return Lea.ajax( form.action || '#', options )
+		return lea.ajax( form.action || '#', options )
 	}
 
 }
-
-module.exports = Lea
