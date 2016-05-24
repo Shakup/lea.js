@@ -1,5 +1,4 @@
 .DS_Store
 node_modules/
 test/
-build/lea.js
-build/lea.js.map
+build/
