@@ -1,7 +1,7 @@
-"**/.*",
-"node_modules",
-"bower_components",
-"build",
-"test",
-"src",
-"bower.json"
+**/.*
+node_modules
+bower_components
+build
+test
+src
+bower.json
