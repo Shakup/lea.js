@@ -56,65 +56,44 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 	
-	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	Object.defineProperty(exports, "__esModule", {
+	   value: true
+	});
+	exports.default = lea;
 	
 	var _Lea = __webpack_require__(1);
 	
 	var _Lea2 = _interopRequireDefault(_Lea);
 	
-	var _Cookie = __webpack_require__(2);
+	var _Utils = __webpack_require__(2);
+	
+	var _Utils2 = _interopRequireDefault(_Utils);
+	
+	var _Cookie = __webpack_require__(3);
 	
 	var _Cookie2 = _interopRequireDefault(_Cookie);
 	
-	var _Device = __webpack_require__(3);
+	var _Device = __webpack_require__(4);
 	
 	var _Device2 = _interopRequireDefault(_Device);
 	
-	var _HttpRequest = __webpack_require__(4);
+	var _HttpRequest = __webpack_require__(5);
 	
 	var _HttpRequest2 = _interopRequireDefault(_HttpRequest);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function lea(query, context) {
-		return new _Lea2.default(query, context || document);
+	   return new _Lea2.default(query, context || document);
 	}
 	
-	lea.parse = function (obj, fn, context) {
-		for (var key in obj) {
-			if (obj.hasOwnProperty(key)) {
-				fn.call(context || obj, key, obj[key]);
-			}
-		}
-	};
+	/* ==========================================================================
+	   Utils
+	   ========================================================================== */
 	
-	lea.extend = function (obj) {
-		if (!obj) obj = {};
-	
-		for (var i = 1; i < arguments.length; i++) {
-			if (!arguments[i]) continue;
-	
-			lea.parse(arguments[i], function (key, val) {
-				return obj[key] = val;
-			});
-		}
-	
-		return obj;
-	};
-	
-	lea.type = function (obj) {
-		return Array.isArray(obj) ? 'array' : obj instanceof HTMLElement ? 'node' : typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
-	};
-	
-	lea.ready = function (fn) {
-		if (document.readyState !== 'loading') fn();else document.addEventListener('DOMContentLoaded', fn);
-	};
-	
-	lea.str2Node = function (str) {
-		var div = document.createElement("div");
-		div.innerHTML = str;
-		return Array.prototype.slice.call(div.childNodes, 0);
-	};
+	Object.keys(_Utils2.default).forEach(function (key) {
+	   return lea[key] = _Utils2.default[key];
+	});
 	
 	/* ==========================================================================
 	   Cookies
@@ -128,50 +107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	lea.device = _Device2.default;
 	lea.isMobile = function () {
-		return !lea.device('desktop');
-	};
-	
-	/* ==========================================================================
-	   Debounce & Throttle
-	   ========================================================================== */
-	
-	lea.debounce = function (fn, delay) {
-		var timer = void 0;
-	
-		return function () {
-			var args = arguments,
-			    context = this;
-	
-			clearTimeout(timer);
-	
-			timer = setTimeout(function () {
-				return fn.apply(context, args);
-			}, delay);
-		};
-	};
-	
-	lea.throttle = function (fn, delay) {
-		var last = void 0,
-		    timer = void 0;
-	
-		return function () {
-			var context = this,
-			    now = +new Date(),
-			    args = arguments;
-	
-			if (last && now < last + delay) {
-	
-				clearTimeout(timer);
-	
-				timer = setTimeout(function () {
-					last = now;
-					fn.apply(context, args);
-				}, delay);
-			} else {
-				last = now;
-				fn.apply(context, args);
-			}
-		};
+	   return !lea.device('desktop');
 	};
 	
 	/* ==========================================================================
@@ -179,18 +115,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	   ========================================================================== */
 	
 	lea.ajax = function (url, options) {
-		return new _HttpRequest2.default(url, options);
+	   return new _HttpRequest2.default(url, options);
 	};
 	
 	lea.get = function (url, options) {
-		return lea.ajax(url, lea.extend(options || {}, { method: 'GET' }));
+	   return lea.ajax(url, lea.extend(options || {}, { method: 'GET' }));
 	};
 	
 	lea.post = function (url, data, options) {
-		return lea.ajax(url, lea.extend(options || {}, { method: 'POST', data: data || {} }));
+	   return lea.ajax(url, lea.extend(options || {}, { method: 'POST', data: data || {} }));
 	};
-	
-	module.exports = lea;
+	module.exports = exports['default'];
 
 /***/ },
 /* 1 */
@@ -550,15 +485,13 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'is',
 			value: function is(selector) {
-				var _this4 = this;
-	
 				var flag = true,
 				    matches = function matches(element) {
 					return (element.matches || element.matchesSelector || element.msMatchesSelector || element.webkitMatchesSelector).call(element, selector);
 				};
 	
 				this.each(function (element) {
-					if (!matches(_this4)) {
+					if (!matches(element)) {
 						flag = false;
 						return false;
 					}
@@ -642,15 +575,185 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				return lea.ajax(form.action || '#', options);
 			}
+		}, {
+			key: 'style',
+			value: function style(props, value) {
+	
+				function compute(val) {
+					if (!val) return '';
+	
+					if (val.match(/^rgba\(0\,\s?0\,\s?0\,\s?0\)$/g)) {
+						return 'transparent';
+					}
+	
+					var hex = lea.rgb2Hex(val);
+	
+					if (hex) {
+						return hex;
+					} else return val;
+				}
+	
+				var propsType = lea.type(props);
+	
+				if ('string' == propsType && !value) {
+					return compute(window.getComputedStyle(this.get(0))[lea.camelcase(props)]);
+				}
+	
+				if ('string' == propsType && 'string' == lea.type(value)) {
+					this.each(function (element) {
+						return element.style[lea.camelcase(props)] = value;
+					});
+				}
+	
+				if ('object' == propsType && !value) {
+					this.each(function (element) {
+						lea.parse(props, function (key, val) {
+							return element.style[lea.camelcase(key)] = val;
+						});
+					});
+				}
+	
+				return this;
+			}
 		}]);
 	
 		return Lea;
 	}();
 	
 	exports.default = Lea;
+	module.exports = exports['default'];
 
 /***/ },
 /* 2 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+	
+	exports.default = {
+		parse: function parse(obj, fn, context) {
+			for (var key in obj) {
+				if (obj.hasOwnProperty(key)) {
+					fn.call(context || obj, key, obj[key]);
+				}
+			}
+		},
+		extend: function extend(obj) {
+			if (!obj) obj = {};
+	
+			for (var i = 1; i < arguments.length; i++) {
+				if (!arguments[i]) continue;
+	
+				lea.parse(arguments[i], function (key, val) {
+					return obj[key] = val;
+				});
+			}
+	
+			return obj;
+		},
+		type: function type(obj) {
+			return Array.isArray(obj) ? 'array' : obj instanceof HTMLElement ? 'node' : typeof obj === 'undefined' ? 'undefined' : _typeof(obj);
+		},
+		ready: function ready(fn) {
+			if (document.readyState !== 'loading') fn();else document.addEventListener('DOMContentLoaded', fn);
+		},
+		str2Node: function str2Node(str) {
+			var div = document.createElement('div');
+			div.innerHTML = str;
+			return Array.prototype.slice.call(div.childNodes, 0);
+		},
+		debounce: function debounce(fn, delay) {
+			var timer = void 0;
+	
+			return function () {
+				var args = arguments,
+				    context = this;
+	
+				clearTimeout(timer);
+	
+				timer = setTimeout(function () {
+					return fn.apply(context, args);
+				}, delay);
+			};
+		},
+		throttle: function throttle(fn, delay) {
+			var last = void 0,
+			    timer = void 0;
+	
+			return function () {
+				var context = this,
+				    now = +new Date(),
+				    args = arguments;
+	
+				if (last && now < last + delay) {
+	
+					clearTimeout(timer);
+	
+					timer = setTimeout(function () {
+						last = now;
+						fn.apply(context, args);
+					}, delay);
+				} else {
+					last = now;
+					fn.apply(context, args);
+				}
+			};
+		},
+		slugify: function slugify(str) {
+			str = str.replace(/^\s+|\s+$/g, '').toLowerCase();
+	
+			var from = 'àáäâèéëêìíïîòóöôùúüûñç·/_,:;',
+			    to = 'aaaaeeeeiiiioooouuuunc------';
+	
+			for (var i = 0, l = from.length; i < l; i++) {
+				str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+			}str = str.replace(/\./g, '-').replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+	
+			return str;
+		},
+		camelcase: function camelcase(str) {
+			return lea.lcFirst(lea.slugify(str).replace(/(?:^|\-)(\w)/g, function (_, c) {
+				return c ? c.toUpperCase() : '';
+			}));
+		},
+		kebabcase: function kebabcase(str) {
+			return lea.slugify(str).replace(/[A-Z\u00C0-\u00D6\u00D8-\u00DE]/g, function (match) {
+				return '-' + match.toLowerCase();
+			});
+		},
+		ucFirst: function ucFirst(str) {
+			return str.charAt(0).toUpperCase() + str.slice(1);
+		},
+		lcFirst: function lcFirst(str) {
+			return str.charAt(0).toLowerCase() + str.slice(1);
+		},
+		rgb2Hex: function rgb2Hex(rgb) {
+			rgb = rgb.match(/^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i);
+	
+			return rgb && rgb.length == 4 ? '#' + ('0' + parseInt(rgb[1], 10).toString(16)).slice(-2) + ('0' + parseInt(rgb[2], 10).toString(16)).slice(-2) + ('0' + parseInt(rgb[3], 10).toString(16)).slice(-2) : '';
+		},
+		lpad: function lpad(str, size) {
+			var chr = arguments.length <= 2 || arguments[2] === undefined ? ' ' : arguments[2];
+	
+			str = str + '';
+			return str.length >= size ? str : new Array(size - str.length + 1).join(chr) + str;
+		},
+		rpad: function rpad(str, size) {
+			var chr = arguments.length <= 2 || arguments[2] === undefined ? ' ' : arguments[2];
+	
+			str = str + '';
+			return str.length >= size ? str : str + new Array(size - str.length + 1).join(chr);
+		}
+	};
+	module.exports = exports['default'];
+
+/***/ },
+/* 3 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -664,7 +767,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			return decodeURIComponent(document.cookie.replace(new RegExp('(?:(?:^|.*;)\\s*' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'), '$1')) || null;
 		},
-	
 		set: function set(key, value, vEnd, sPath, sDomain, bSecure) {
 			if (!key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key)) return false;
 	
@@ -688,21 +790,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			return true;
 		},
-	
 		remove: function remove(key, sPath, sDomain) {
-			if (!undefined.exists(key)) return false;
+			if (!this.exists(key)) return false;
 	
 			document.cookie = encodeURIComponent(key) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + (sDomain ? '; domain=' + sDomain : '') + (sPath ? '; path=' + sPath : '');
 	
 			return true;
 		},
-	
 		exists: function exists(key) {
 			if (!key) return false;
 	
 			return new RegExp('(?:^|;\\s*)' + encodeURIComponent(key).replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=').test(document.cookie);
 		},
-	
 		keys: function keys() {
 			var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, '').split(/\s*(?:\=[^;]*)?;\s*/);
 	
@@ -713,9 +812,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			return aKeys;
 		}
 	};
+	module.exports = exports['default'];
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -732,9 +832,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		return type ? device === type : device;
 	};
+	
+	module.exports = exports['default'];
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -773,7 +875,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			this.transport.onreadystatechange = function () {
 	
-				this.options.change.call(this);
+				self.options.change.call(this);
 	
 				if (this.readyState == 4) {
 	
@@ -853,6 +955,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 	
 	exports.default = HttpRequest;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ])

@@ -39,12 +39,12 @@ export default class Lea {
 	}
 
 	addClass (klass) {
-		this.each( (element) => element.classList.add(klass) )
+		this.each( element => element.classList.add(klass) )
 		return this
 	}
 
 	removeClass (klass) {
-		this.each( (element) => element.classList.remove(klass) )
+		this.each( element => element.classList.remove(klass) )
 		return this
 	}
 
@@ -62,27 +62,27 @@ export default class Lea {
 	}
 
 	toggleClass (klass) {
-		this.each( (element) => element.classList.toggle(klass) )
+		this.each( element => element.classList.toggle(klass) )
 		return this
 	}
 
 	show (display) {
 		if ( !display ) display = 'block'
 
-		this.each( (element) => element.style.display = display )
+		this.each( element => element.style.display = display )
 
 		return this
 	}
 
 	hide () {
-		this.each( (element) => element.style.display = 'none' )
+		this.each( element => element.style.display = 'none' )
 		return this
 	}
 
 	toggle (display) {
 		if ( !display ) display = 'block'
 
-		this.each( (element) => element.style.display = element.style.display == 'none' ? display : 'none' )
+		this.each( element => element.style.display = element.style.display == 'none' ? display : 'none' )
 
 		return this
 	}
@@ -91,7 +91,7 @@ export default class Lea {
 		if ( !src ) {
 			return this.get(0).innerHTML
 		} else {
-			this.each( (element) => element.innerHTML = src )
+			this.each( element => element.innerHTML = src )
 			return this
 		}
 	}
@@ -99,7 +99,7 @@ export default class Lea {
 	on (events, fn) {
 		let tabevts = events.split(' ')
 
-		this.each( (element) => {
+		this.each( element => {
 			tabevts.forEach( (event) => element.addEventListener(event, fn, false) )
 		} )
 
@@ -109,7 +109,7 @@ export default class Lea {
 	off (events, fn) {
 		let tabevts = events.split(' ')
 
-		this.each( (element) => {
+		this.each( element => {
 			tabevts.forEach( (event) => element.removeEventListener(event, fn, false) )
 		})
 
@@ -119,7 +119,7 @@ export default class Lea {
 	delegate (selector, events, fn) {
 		let tabevts = events.split(' ')
 
-		this.each( (element) => {
+		this.each( element => {
 			tabevts.forEach( (event) => {
 				element.addEventListener(event, (evt) => {
 					if ( lea( evt.target ).is(selector) ) fn.call( evt.target, event )
@@ -135,7 +135,7 @@ export default class Lea {
 		
 		evt.initEvent(event, true, true)
 
-		this.each( (element) => element.dispatchEvent(evt) )
+		this.each( element => element.dispatchEvent(evt) )
 
 		return this
 	}
@@ -146,7 +146,7 @@ export default class Lea {
 
 	attr (attr, val) {
 		if ( val !== undefined ) {
-			this.each( (element) => element.setAttribute( attr, val ) )
+			this.each( element => element.setAttribute( attr, val ) )
 			return this
 		} else {
 			return this.elements[0].getAttribute(attr)
@@ -154,13 +154,13 @@ export default class Lea {
 	}
 
 	removeAttr (attr) {
-		this.each( (element) => element.removeAttribute(attr) )
+		this.each( element => element.removeAttribute(attr) )
 		return this
 	}
 
 	data (data, value) {
 		if (value !== undefined) {
-			this.each( (element) => element.dataset[data] = value )
+			this.each( element => element.dataset[data] = value )
 			return this
 		} else {
 			return this.get(0).dataset[data]
@@ -168,12 +168,12 @@ export default class Lea {
 	}
 
 	removeData (data) {
-		this.each( (element) => delete this.dataset[data] )
+		this.each( element => delete this.dataset[data] )
 		return this
 	}
 
 	append (obj) {
-		this.each( (element) => {
+		this.each( element => {
 
 			if ( lea.type(obj) == 'node' ) {
 				element.appendChild(obj)
@@ -188,7 +188,7 @@ export default class Lea {
 	}
 
 	prepend (obj) {
-		this.each( (element) => {
+		this.each( element => {
 
 			if ( lea.type(obj) == 'node' ) {
 				element.insertBefore( obj, element.firstChild )
@@ -203,24 +203,24 @@ export default class Lea {
 	}
 
 	before (obj) {
-		this.each( (element) => element.insertAdjacentHTML( 'beforebegin', obj ) )
+		this.each( element => element.insertAdjacentHTML( 'beforebegin', obj ) )
 		return this
 	}
 
 	after (obj) {
-		this.each( (element) => element.insertAdjacentHTML( 'afterend', obj ) )
+		this.each( element => element.insertAdjacentHTML( 'afterend', obj ) )
 		return this
 	}
 
 	remove () {
-		this.each( (element) => element.parentNode.removeChild(this) )
+		this.each( element => element.parentNode.removeChild(this) )
 		return this
 	}
 
 	parent () {
 		let parents = []
 
-		this.each( (element) => {
+		this.each( element => {
 			let parent = this.parentNode
 			if (parent) parents.push(parent)
 		})
@@ -231,7 +231,7 @@ export default class Lea {
 	find (selector) {
 		let found = []
 
-		this.each( (element) => {
+		this.each( element => {
 			found = found.concat( lea.toArray( element.querySelectorAll(selector) ) )
 		})
 
@@ -241,7 +241,7 @@ export default class Lea {
 	prev () {
 		let previous = []
 
-		this.each( (element) => {
+		this.each( element => {
 			let prev = element.previousElementSibling
 			if (prev) previous.push(prev)
 		})
@@ -252,7 +252,7 @@ export default class Lea {
 	next () {
 		let next = []
 
-		this.each( (element) => {
+		this.each( element => {
 			let nex = element.nextElementSibling
 			if (nex) next.push(nex)
 		})
@@ -261,19 +261,19 @@ export default class Lea {
 	}
 
 	clear () {
-		this.each( (element) => element.innerHTML = '' )
+		this.each( element => element.innerHTML = '' )
 		return this
 	}
 
 	is (selector) {
 		let
 			flag      = true
-			, matches = (element) => {
+			, matches = element => {
 				return ( element.matches || element.matchesSelector || element.msMatchesSelector || element.webkitMatchesSelector ).call( element, selector )
 			}
 
-		this.each( (element) => {
-			if ( !matches(this) ) {
+		this.each( element => {
+			if ( !matches(element) ) {
 				flag = false
 				return false
 			}
@@ -307,7 +307,7 @@ export default class Lea {
 	}
 
 	replaceWith (html) {
-		this.each( (element) => element.outerHTML = html )
+		this.each( element => element.outerHTML = html )
 		return this
 	}
 
@@ -352,6 +352,41 @@ export default class Lea {
 		}, options || {})
 
 		return lea.ajax( form.action || '#', options )
+	}
+
+	style (props, value) {
+
+		function compute (val) {
+			if ( !val ) return ''
+
+			if ( val.match( /^rgba\(0\,\s?0\,\s?0\,\s?0\)$/g ) ) {
+				return 'transparent'
+			}
+
+			let hex = lea.rgb2Hex(val)
+			
+			if ( hex ) {
+				return hex
+			} else return val
+		}
+
+		let propsType = lea.type(props)
+
+		if ( 'string' == propsType && !value ) {
+			return compute( window.getComputedStyle( this.get(0) )[ lea.camelcase(props) ] )
+		}
+
+		if ( 'string' == propsType && 'string' == lea.type(value) ) {
+			this.each( element => element.style[ lea.camelcase(props) ] = value )
+		}
+
+		if ( 'object' == propsType && !value ) {
+			this.each( element => {
+				lea.parse( props, (key, val) => element.style[ lea.camelcase(key) ] = val )
+			} )
+		}
+
+		return this
 	}
 
 }

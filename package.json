@@ -1,8 +1,8 @@
 {
   "name": "lea",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "A tiny JavaScript framework for modern browsers (and developers)",
-  "main": "dist/lea.min.js",
+  "main": "dist/lea.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",

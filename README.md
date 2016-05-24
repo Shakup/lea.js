@@ -1,5 +1,5 @@
 # lea.js
-> A tiny JavaScript framework (10kb) for modern browsers (and developers).
+> A tiny JavaScript framework (~12kb) for modern browsers (and developers).
 
 
 ## Installation
