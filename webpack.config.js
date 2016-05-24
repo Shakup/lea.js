@@ -1,6 +1,13 @@
 'use strict'
 
-var webpack = require('webpack')
+var
+	webpack  = require('webpack')
+	, pkg    = require('./package.json')
+	, banner = `${pkg.name} - ${pkg.description}
+Author: ${pkg.author}
+Version: v${pkg.version}
+Url: ${pkg.homepage}
+License(s): ${pkg.license}`
 
 module.exports = {
 	entry: './src/lea.js',
@@ -49,6 +56,7 @@ if ( process.env.NODE_ENV === 'production' ) {
 				warnings: false
 			}
 		}),
+		new webpack.BannerPlugin(banner),
 		new webpack.optimize.OccurenceOrderPlugin()
 	])
 }
