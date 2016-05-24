@@ -26,6 +26,7 @@
     "Gruntfile.js",
     "package.json",
     "webpack.config.js",
+    "build",
     "test"
   ]
 }
