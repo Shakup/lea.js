@@ -1,7 +1,13 @@
-language: javascript
+sudo: false
+language: node_js
 branches:
     only:
         - develop
+node_js:
+  - "6"
+  - "4"
+install:
+  - npm install
 notifications:
     email:
         - sebastien.decamme@gmail.com
