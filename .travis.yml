@@ -1,7 +1,7 @@
 language: javascript
 branches:
     only:
-        - dev
+        - develop
 notifications:
     email:
         - sebastien.decamme@gmail.com
