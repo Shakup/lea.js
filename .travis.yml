@@ -7,6 +7,7 @@ node_js:
   - "6"
   - "4"
 install:
+  - npm install -g eslint
   - npm install
 notifications:
     email:

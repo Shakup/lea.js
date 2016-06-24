@@ -14,13 +14,13 @@ export default {
 			switch (vEnd.constructor) {
 				case Number:
 					sExpires = vEnd === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + vEnd
-				break;
+					break;
 				case String:
 					sExpires = '; expires=' + vEnd
-				break;
+					break;
 				case Date:
 					sExpires = '; expires=' + vEnd.toUTCString()
-				break;
+					break;
 			}
 		}
 
