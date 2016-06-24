@@ -1,3 +1,7 @@
+<center>[![Léa](http://juggernaut.fr/tmp/lea.svg)](https://travis-ci.org/Shakup/lea.js)</center>
+<center>[![Build Status](https://travis-ci.org/Shakup/lea.js.svg?branch=master)](https://travis-ci.org/Shakup/lea.js)</center>
+
+
 # lea.js
 > A tiny JavaScript framework (~12kb) for modern browsers (and developers).
 
