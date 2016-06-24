@@ -1,6 +1,10 @@
-<div style="text-align:center">![Léa](http://juggernaut.fr/tmp/lea.svg)</div>
+<p align="center">
+	<img src="http://juggernaut.fr/tmp/lea.svg">
+</p>
 
-<div style="text-align:center">[![Build Status](https://travis-ci.org/Shakup/lea.js.svg?branch=master)](https://travis-ci.org/Shakup/lea.js)</div>
+<p align="center">
+	<a href="https://travis-ci.org/Shakup/lea.js" target="_blank"><img src="https://travis-ci.org/Shakup/lea.js.svg?branch=master"></a>
+</p>
 
 
 # lea.js
