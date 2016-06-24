@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>LeaJS</title>
+	<style>
+		.blue{
+			background-color: blue;
+		}
+		.red{
+			background-color: red;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Lea Test Page</h1>
+
+	<ul id="list">
+		<li>Lorem ipsum dolor sit amet.</li>
+		<li>Similique, sapiente! Omnis libero, tempore.</li>
+		<li>Iste, cupiditate veritatis soluta reiciendis?</li>
+		<li>Iste, cupiditate veritatis soluta reiciendis?</li>
+		<li>Quod, porro quam incidunt blanditiis!</li>
+	</ul>
+	
+	<script src="../build/lea.js"></script>
+
+	<script>
+		lea.ready( function () {
+			
+			console.log( lea('#list').position() );
+
+		});
+
+
+	</script>
+
+</body>
+</html>
