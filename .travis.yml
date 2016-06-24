@@ -1,7 +1,14 @@
-language: javascript
+sudo: false
+language: node_js
 branches:
     only:
-        - dev
+        - develop
+node_js:
+  - "6"
+  - "4"
+install:
+  - npm install -g eslint
+  - npm install
 notifications:
     email:
         - sebastien.decamme@gmail.com
