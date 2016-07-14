@@ -1,3 +1,6 @@
+import lea from '../lea'
+
+
 export default {
 
 	parse (obj, fn, context) {

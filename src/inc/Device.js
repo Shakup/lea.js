@@ -1,3 +1,6 @@
+import lea from '../lea'
+
+
 export default type => {
 	let
 		ua       = navigator.userAgent.toLowerCase()
