@@ -1,6 +1,6 @@
 {
   "name": "lea",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "A tiny JavaScript framework for modern browsers (and developers)",
   "main": "dist/lea.js",
   "scripts": {

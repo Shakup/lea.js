@@ -1,7 +1,7 @@
 /*!
  * lea - A tiny JavaScript framework for modern browsers (and developers)
  * Author: Sébastien Decamme <sebastien.decamme@gmail.com>
- * Version: v2.1.1
+ * Version: v2.1.2
  * Url: https://github.com/Shakup/lea.js
  * License(s): MIT
  */
