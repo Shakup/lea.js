@@ -10,7 +10,7 @@ Url: ${pkg.homepage}
 License(s): ${pkg.license}`
 
 module.exports = {
-	entry: './src/lea.js',
+	entry: ['./src/lea'],
 	output: {
 		path: './build',
 		filename: 'lea.js',

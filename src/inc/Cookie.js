@@ -1,3 +1,6 @@
+import lea from '../lea'
+
+
 export default {
 	get (key) {
 		if (!key) return null

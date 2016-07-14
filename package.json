@@ -4,7 +4,7 @@
   "description": "A tiny JavaScript framework for modern browsers (and developers)",
   "main": "dist/lea.js",
   "scripts": {
-    "test": "eslint ./src/**/*.js",
+    "test": "eslint ./src/**/*.js && cd ./test && casperjs test run.js",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "webpack --watch"
   },

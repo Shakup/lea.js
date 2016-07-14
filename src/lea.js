@@ -1,9 +1,8 @@
 import Lea from './inc/Lea'
 
-export default function lea (query, context) {
-	return new Lea( query, context || document )
+var lea = function (query, context) {
+   return new Lea( query, context || document )
 }
-
 
 /* ==========================================================================
    Utils
@@ -50,3 +49,5 @@ lea.get = (url, options) => {
 lea.post = (url, data, options) => {
 	return lea.ajax( url, lea.extend( options || {}, {method: 'POST', data: data || {}} ) )
 }
+
+export default lea

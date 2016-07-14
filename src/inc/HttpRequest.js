@@ -1,3 +1,6 @@
+import lea from '../lea'
+
+
 export default class HttpRequest {
 
 	constructor (url, options) {
