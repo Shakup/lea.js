@@ -1,6 +1,3 @@
-import lea from '../lea'
-
-
 export default {
 	get (key) {
 		if (!key) return null
@@ -12,18 +9,18 @@ export default {
 		if ( !key || /^(?:expires|max\-age|path|domain|secure)$/i.test(key) ) return false
 		
 		let sExpires = ''
-		
+
 		if (vEnd) {
 			switch (vEnd.constructor) {
-				case Number:
-					sExpires = vEnd === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + vEnd
-					break;
-				case String:
-					sExpires = '; expires=' + vEnd
-					break;
-				case Date:
-					sExpires = '; expires=' + vEnd.toUTCString()
-					break;
+			case Number:
+				sExpires = vEnd === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + vEnd
+				break
+			case String:
+				sExpires = '; expires=' + vEnd
+				break
+			case Date:
+				sExpires = '; expires=' + vEnd.toUTCString()
+				break
 			}
 		}
 

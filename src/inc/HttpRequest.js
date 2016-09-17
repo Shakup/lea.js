@@ -92,7 +92,7 @@ export default class HttpRequest {
 	}
 
 	send () {
-		this.transport.send( this.parameters.length ? this.parameters : null );
+		this.transport.send( this.parameters.length ? this.parameters : null )
 		return this
 	}
 

@@ -54,38 +54,44 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	module.exports = __webpack_require__(1);
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	   value: true
 	});
-	exports.default = lea;
 	
-	var _Lea = __webpack_require__(1);
+	var _Lea = __webpack_require__(2);
 	
 	var _Lea2 = _interopRequireDefault(_Lea);
 	
-	var _Utils = __webpack_require__(2);
+	var _Utils = __webpack_require__(3);
 	
 	var _Utils2 = _interopRequireDefault(_Utils);
 	
-	var _Cookie = __webpack_require__(3);
+	var _Cookie = __webpack_require__(4);
 	
 	var _Cookie2 = _interopRequireDefault(_Cookie);
 	
-	var _Device = __webpack_require__(4);
+	var _Device = __webpack_require__(5);
 	
 	var _Device2 = _interopRequireDefault(_Device);
 	
-	var _HttpRequest = __webpack_require__(5);
+	var _HttpRequest = __webpack_require__(6);
 	
 	var _HttpRequest2 = _interopRequireDefault(_HttpRequest);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	function lea(query, context) {
+	var lea = function lea(query, context) {
 	   return new _Lea2.default(query, context || document);
-	}
+	};
 	
 	/* ==========================================================================
 	   Utils
@@ -125,11 +131,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	lea.post = function (url, data, options) {
 	   return lea.ajax(url, lea.extend(options || {}, { method: 'POST', data: data || {} }));
 	};
+	
+	exports.default = lea;
 	module.exports = exports['default'];
 
 /***/ },
-/* 1 */
-/***/ function(module, exports) {
+/* 2 */
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -139,19 +147,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _lea = __webpack_require__(1);
+	
+	var _lea2 = _interopRequireDefault(_lea);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Lea = function () {
 		function Lea(query, context) {
 			_classCallCheck(this, Lea);
 	
-			if (lea.type(query) != 'array') query = [query];
+			if (_lea2.default.type(query) != 'array') query = [query];
 	
 			this.elements = query.map(function (obj) {
 	
-				if (lea.type(obj) == 'node' || obj === window || obj === document) {
+				if (_lea2.default.type(obj) == 'node' || obj === window || obj === document) {
 					return obj;
-				} else if (lea.type(obj) === 'string') {
+				} else if (_lea2.default.type(obj) === 'string') {
 					return Array.from(context.querySelectorAll(obj));
 				} else return null;
 			});
@@ -298,7 +312,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				this.each(function (element) {
 					tabevts.forEach(function (event) {
 						element.addEventListener(event, function (evt) {
-							if (lea(evt.target).is(selector)) fn.call(evt.target, event);
+							if ((0, _lea2.default)(evt.target).is(selector)) fn.call(evt.target, event);
 						}, false);
 					});
 				});
@@ -370,10 +384,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			value: function append(obj) {
 				this.each(function (element) {
 	
-					if (lea.type(obj) == 'node') {
+					if (_lea2.default.type(obj) == 'node') {
 						element.appendChild(obj);
 					} else {
-						var nodes = lea.str2Node(obj);
+						var nodes = _lea2.default.str2Node(obj);
 						nodes.forEach(function (node) {
 							return element.appendChild(node);
 						});
@@ -387,10 +401,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			value: function prepend(obj) {
 				this.each(function (element) {
 	
-					if (lea.type(obj) == 'node') {
+					if (_lea2.default.type(obj) == 'node') {
 						element.insertBefore(obj, element.firstChild);
 					} else {
-						var nodes = lea.str2Node(obj);
+						var nodes = _lea2.default.str2Node(obj);
 						nodes.forEach(function (node) {
 							return element.insertBefore(node, element.firstChild);
 						});
@@ -418,26 +432,22 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'remove',
 			value: function remove() {
-				var _this2 = this;
-	
 				this.each(function (element) {
-					return element.parentNode.removeChild(_this2);
+					return element.parentNode.removeChild(element);
 				});
 				return this;
 			}
 		}, {
 			key: 'parent',
 			value: function parent() {
-				var _this3 = this;
-	
 				var parents = [];
 	
 				this.each(function (element) {
-					var parent = _this3.parentNode;
+					var parent = element.parentNode;
 					if (parent) parents.push(parent);
 				});
 	
-				return lea(parents);
+				return (0, _lea2.default)(parents);
 			}
 		}, {
 			key: 'find',
@@ -445,10 +455,10 @@ return /******/ (function(modules) { // webpackBootstrap
 				var found = [];
 	
 				this.each(function (element) {
-					found = found.concat(lea.toArray(element.querySelectorAll(selector)));
+					found = found.concat(Array.from(element.querySelectorAll(selector)));
 				});
 	
-				return lea(found);
+				return (0, _lea2.default)(found);
 			}
 		}, {
 			key: 'prev',
@@ -460,7 +470,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					if (prev) previous.push(prev);
 				});
 	
-				return lea(previous);
+				return (0, _lea2.default)(previous);
 			}
 		}, {
 			key: 'next',
@@ -472,7 +482,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					if (nex) next.push(nex);
 				});
 	
-				return lea(next);
+				return (0, _lea2.default)(next);
 			}
 		}, {
 			key: 'clear',
@@ -542,7 +552,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				if (form.nodeName.toLowerCase() !== 'form') return serial;
 	
-				lea.toArray(form.elements).forEach(function (field) {
+				Array.from(form.elements).forEach(function (field) {
 	
 					if (field.name && ['file', 'button', 'reset', 'submit'].indexOf(field.type) == -1) {
 						if (field.type == 'select-multiple') {
@@ -568,16 +578,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 				if (form.nodeName.toLowerCase() !== 'form') return false;
 	
-				options = lea.extend({
+				options = _lea2.default.extend({
 					method: form.method || 'GET',
-					data: lea(form).serialize()
+					data: (0, _lea2.default)(form).serialize()
 				}, options || {});
 	
-				return lea.ajax(form.action || '#', options);
+				return _lea2.default.ajax(form.action || '#', options);
+			}
+		}, {
+			key: 'val',
+			value: function val(value) {
+				if (!value) {
+					return this.get(0).value || '';
+				} else {
+					this.each(function (element) {
+						return element.value = value;
+					});
+					return this;
+				}
 			}
 		}, {
 			key: 'style',
 			value: function style(props, value) {
+				var _this2 = this;
 	
 				function compute(val) {
 					if (!val) return '';
@@ -586,31 +609,39 @@ return /******/ (function(modules) { // webpackBootstrap
 						return 'transparent';
 					}
 	
-					var hex = lea.rgb2Hex(val);
+					var hex = _lea2.default.rgb2Hex(val);
 	
 					if (hex) {
 						return hex;
 					} else return val;
 				}
 	
-				var propsType = lea.type(props);
+				var propsType = _lea2.default.type(props);
 	
 				if ('string' == propsType && !value) {
-					return compute(window.getComputedStyle(this.get(0))[lea.camelcase(props)]);
+					return compute(window.getComputedStyle(this.get(0))[_lea2.default.prefix(props)]);
 				}
 	
-				if ('string' == propsType && 'string' == lea.type(value)) {
+				if ('string' == propsType && 'string' == _lea2.default.type(value)) {
 					this.each(function (element) {
-						return element.style[lea.camelcase(props)] = value;
+						return element.style[_lea2.default.prefix(props)] = value;
 					});
 				}
 	
 				if ('object' == propsType && !value) {
-					this.each(function (element) {
-						lea.parse(props, function (key, val) {
-							return element.style[lea.camelcase(key)] = val;
+					(function () {
+						var prefixed_props = {};
+	
+						Object.keys(props).forEach(function (prop) {
+							return prefixed_props[_lea2.default.prefix(prop)] = props[prop];
 						});
-					});
+	
+						_this2.each(function (element) {
+							Object.keys(prefixed_props).forEach(function (prop) {
+								return element.style[prop] = prefixed_props[prop];
+							});
+						});
+					})();
 				}
 	
 				return this;
@@ -624,8 +655,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 2 */
-/***/ function(module, exports) {
+/* 3 */
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -635,13 +666,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 	
+	var _lea = __webpack_require__(1);
+	
+	var _lea2 = _interopRequireDefault(_lea);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	exports.default = {
 		parse: function parse(obj, fn, context) {
-			for (var key in obj) {
-				if (obj.hasOwnProperty(key)) {
-					fn.call(context || obj, key, obj[key]);
-				}
-			}
+			Object.keys(obj).forEach(function (key) {
+				fn.call(context || obj, key, obj[key]);
+			});
 		},
 		extend: function extend(obj) {
 			if (!obj) obj = {};
@@ -649,7 +684,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			for (var i = 1; i < arguments.length; i++) {
 				if (!arguments[i]) continue;
 	
-				lea.parse(arguments[i], function (key, val) {
+				_lea2.default.parse(arguments[i], function (key, val) {
 					return obj[key] = val;
 				});
 			}
@@ -717,12 +752,12 @@ return /******/ (function(modules) { // webpackBootstrap
 			return str;
 		},
 		camelcase: function camelcase(str) {
-			return lea.lcFirst(lea.slugify(str).replace(/(?:^|\-)(\w)/g, function (_, c) {
+			return _lea2.default.lcFirst(_lea2.default.slugify(str).replace(/(?:^|\-)(\w)/g, function (_, c) {
 				return c ? c.toUpperCase() : '';
 			}));
 		},
 		kebabcase: function kebabcase(str) {
-			return lea.slugify(str).replace(/[A-Z\u00C0-\u00D6\u00D8-\u00DE]/g, function (match) {
+			return _lea2.default.slugify(str).replace(/[A-Z\u00C0-\u00D6\u00D8-\u00DE]/g, function (match) {
 				return '-' + match.toLowerCase();
 			});
 		},
@@ -748,12 +783,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 			str = str + '';
 			return str.length >= size ? str : str + new Array(size - str.length + 1).join(chr);
+		},
+		prefix: function prefix(prop) {
+			var styles = document.body ? document.body.style : document.createElement('div').style,
+			    prefixes = ['moz', 'Moz', 'webkit', 'Webkit', 'ms', 'o'],
+			    output = this.camelcase(prop);
+	
+			if (output in styles) return output;
+	
+			prop = this.ucFirst(output);
+	
+			prefixes.some(function (prefix) {
+				if (prefix + prop in styles) {
+					output = prefix + prop;
+					return true;
+				}
+				return false;
+			});
+	
+			return output;
 		}
 	};
 	module.exports = exports['default'];
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -815,7 +869,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -836,8 +890,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = exports['default'];
 
 /***/ },
-/* 5 */
-/***/ function(module, exports) {
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
@@ -846,6 +900,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _lea = __webpack_require__(1);
+	
+	var _lea2 = _interopRequireDefault(_lea);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -856,7 +916,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			var cb = function cb() {},
 			    self = this;
 	
-			this.options = lea.extend({
+			this.options = _lea2.default.extend({
 				method: 'GET',
 				always: cb,
 				then: cb,
@@ -904,7 +964,7 @@ return /******/ (function(modules) { // webpackBootstrap
 			if (this.options.method == 'POST') {
 				this.transport.setRequestHeader('Content-Type', this.options.contentType);
 	
-				lea.parse(this.options.data, function (key, val) {
+				_lea2.default.parse(this.options.data, function (key, val) {
 					if (self.parameters.length) self.parameters += '&';
 					self.parameters += encodeURIComponent(key) + '=' + encodeURIComponent(val);
 				});
