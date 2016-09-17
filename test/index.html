@@ -10,9 +10,12 @@
 		.red{
 			background-color: red;
 		}
+		#btn-ajax{
+			width: 300px;
+			height: 40px;
+		}
 	</style>
-	<!-- <script src="lea.js"></script> -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+	<script src="../build/lea.js"></script> 
 </head>
 <body>
 
@@ -31,10 +34,14 @@
 	<div id="xhr-log"></div>
 
 	<script>
+		window.$ = lea;
+
 		$('#btn-ajax').click(function () {
-			$.get('data.json').then( function (response) {
-				$('#xhr-log').html( response )
-			})
+			$(this).style({
+				'transition': 'all 650ms ease-in-out',
+				'transform': 'rotate(90deg)',
+				'background-color': 'red'
+			});
 		})
 	</script>
 

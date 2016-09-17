@@ -1,8 +1,7 @@
 import Lea from './inc/Lea'
 
-var lea = function (query, context) {
-   return new Lea( query, context || document )
-}
+
+var lea = (query, context) => new Lea( query, context || document )
 
 /* ==========================================================================
    Utils

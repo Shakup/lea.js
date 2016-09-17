@@ -4,11 +4,9 @@ import lea from '../lea'
 export default {
 
 	parse (obj, fn, context) {
-		for ( var key in obj ) {
-			if ( obj.hasOwnProperty(key) ) {
-				fn.call( context || obj, key, obj[key] )
-			}
-		}
+		Object.keys(obj).forEach( key => {
+			fn.call( context || obj, key, obj[key] )
+		})
 	},
 
 	extend (obj) {
@@ -130,5 +128,26 @@ export default {
 	rpad (str, size, chr = ' ') {
 		str = str + ''
 		return str.length >= size ? str : str + new Array( size - str.length + 1 ).join(chr)
+	},
+
+	prefix (prop) {
+		let
+			styles     = document.body ? document.body.style : document.createElement('div').style
+			, prefixes = ['moz','Moz','webkit','Webkit','ms','o']
+			, output   = this.camelcase(prop)
+		
+		if ( output in styles ) return output
+
+		prop = this.ucFirst( output )
+
+		prefixes.some( prefix => {
+			if ( prefix + prop in styles ) {
+				output = prefix + prop
+				return true
+			}
+			return false
+		})
+
+		return output
 	}
 }

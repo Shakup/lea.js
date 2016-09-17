@@ -216,7 +216,7 @@ export default class Lea {
 	}
 
 	remove () {
-		this.each( element => element.parentNode.removeChild(this) )
+		this.each( element => element.parentNode.removeChild(element) )
 		return this
 	}
 
@@ -224,7 +224,7 @@ export default class Lea {
 		let parents = []
 
 		this.each( element => {
-			let parent = this.parentNode
+			let parent = element.parentNode
 			if (parent) parents.push(parent)
 		})
 		
@@ -235,7 +235,7 @@ export default class Lea {
 		let found = []
 
 		this.each( element => {
-			found = found.concat( lea.toArray( element.querySelectorAll(selector) ) )
+			found = found.concat( Array.from( element.querySelectorAll(selector) ) )
 		})
 
 		return lea(found)
@@ -322,7 +322,7 @@ export default class Lea {
 
 		if ( form.nodeName.toLowerCase() !== 'form' ) return serial
 
-		lea.toArray( form.elements ).forEach( (field) => {
+		Array.from( form.elements ).forEach( (field) => {
 
 			if ( field.name && ( ['file', 'button', 'reset', 'submit'] ).indexOf( field.type ) == -1 ) {
 				if ( field.type == 'select-multiple' ) {
@@ -357,6 +357,15 @@ export default class Lea {
 		return lea.ajax( form.action || '#', options )
 	}
 
+	val (value) {
+		if ( !value ) {
+			return this.get(0).value || ''
+		} else {
+			this.each( element => element.value = value )
+			return this
+		}
+	}
+
 	style (props, value) {
 
 		function compute (val) {
@@ -376,20 +385,23 @@ export default class Lea {
 		let propsType = lea.type(props)
 
 		if ( 'string' == propsType && !value ) {
-			return compute( window.getComputedStyle( this.get(0) )[ lea.camelcase(props) ] )
+			return compute( window.getComputedStyle( this.get(0) )[ lea.prefix(props) ] )
 		}
 
 		if ( 'string' == propsType && 'string' == lea.type(value) ) {
-			this.each( element => element.style[ lea.camelcase(props) ] = value )
+			this.each( element => element.style[ lea.prefix(props) ] = value )
 		}
 
 		if ( 'object' == propsType && !value ) {
+			let prefixed_props = {}
+
+			Object.keys(props).forEach( prop => prefixed_props[ lea.prefix(prop) ] = props[prop] )
+
 			this.each( element => {
-				lea.parse( props, (key, val) => element.style[ lea.camelcase(key) ] = val )
-			} )
+				Object.keys(prefixed_props).forEach( prop => element.style[prop] = prefixed_props[prop] )
+			})
 		}
 
 		return this
 	}
-
 }
