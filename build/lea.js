@@ -911,6 +911,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	var HttpRequest = function () {
 		function HttpRequest(url, options) {
+			var _this = this;
+	
 			_classCallCheck(this, HttpRequest);
 	
 			var cb = function cb() {},
@@ -925,6 +927,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				send: true,
 				async: true,
 				data: {},
+				headers: {},
 				withCredentials: false,
 				contentType: 'application/x-www-form-urlencoded'
 			}, options || {});
@@ -960,6 +963,10 @@ return /******/ (function(modules) { // webpackBootstrap
 			this.transport.open(this.options.method, url, this.options.async);
 	
 			this.transport.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	
+			_lea2.default.parse(this.options.headers, function (key, val) {
+				_this.transport.setRequestHeader(key, val);
+			});
 	
 			if (this.options.method == 'POST') {
 				this.transport.setRequestHeader('Content-Type', this.options.contentType);

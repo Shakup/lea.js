@@ -17,6 +17,7 @@ export default class HttpRequest {
 			send: true,
 			async: true,
 			data: {},
+			headers: {},
 			withCredentials: false,
 			contentType: 'application/x-www-form-urlencoded'
 		}, options || {})
@@ -58,6 +59,10 @@ export default class HttpRequest {
 		this.transport.open( this.options.method, url, this.options.async )
 
 		this.transport.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' )
+
+		lea.parse( this.options.headers, (key, val) => {
+			this.transport.setRequestHeader( key, val )
+		})
 
 		if ( this.options.method == 'POST' ) {
 			this.transport.setRequestHeader( 'Content-Type', this.options.contentType )
