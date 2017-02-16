@@ -68,8 +68,8 @@ export default class HttpRequest {
 			this.transport.setRequestHeader( 'Content-Type', this.options.contentType )
 
 			lea.parse( this.options.data, (key, val) => {
-				if (self.parameters.length) self.parameters += '&'
-				self.parameters += encodeURIComponent(key) + '=' + encodeURIComponent(val)
+				if (this.parameters.length) this.parameters += '&'
+				this.parameters += encodeURIComponent(key) + '=' + encodeURIComponent(val)
 			} )
 		}
 
