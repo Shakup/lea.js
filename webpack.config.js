@@ -1,5 +1,3 @@
-'use strict'
-
 var
 	webpack  = require('webpack')
 	, pkg    = require('./package.json')

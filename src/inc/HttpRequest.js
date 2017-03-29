@@ -74,6 +74,8 @@ export default class HttpRequest {
 		}
 
 		if ( this.options.send ) this.send()
+
+		return this
 	}
 
 	always (cb) {

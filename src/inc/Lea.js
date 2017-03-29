@@ -38,7 +38,7 @@ export default class Lea {
 	}
 
 	get (index) {
-		return index !== undefined ? this.elements[ index ] || null : this.elements;
+		return index !== undefined ? this.elements[ index ] || null : this.elements
 	}
 
 	addClass (klass) {
@@ -171,7 +171,7 @@ export default class Lea {
 	}
 
 	removeData (data) {
-		this.each( element => delete this.dataset[data] )
+		this.each( () => delete this.dataset[data] )
 		return this
 	}
 
@@ -322,11 +322,11 @@ export default class Lea {
 
 		if ( form.nodeName.toLowerCase() !== 'form' ) return serial
 
-		Array.from( form.elements ).forEach( (field) => {
+		Array.from( form.elements ).forEach( (field, i) => {
 
 			if ( field.name && ( ['file', 'button', 'reset', 'submit'] ).indexOf( field.type ) == -1 ) {
 				if ( field.type == 'select-multiple' ) {
-					l = form.elements[i].options.length;
+					l = form.elements[i].options.length
 					
 					for ( j = 0; j < l; j++ ) {
 						if ( field.options[j].selected ) {
