@@ -85,7 +85,10 @@ export default class Lea {
 	toggle (display) {
 		if ( !display ) display = 'block'
 
-		this.each( element => element.style.display = element.style.display == 'none' ? display : 'none' )
+		this.each( element => {
+			let element_display = lea(element).style('display')
+			element.style.display = element_display == 'none' ? display : 'none'
+		})
 
 		return this
 	}
@@ -145,6 +148,24 @@ export default class Lea {
 
 	click (fn) {
 		return this.on('click', fn)
+	}
+
+	focus () {
+		this.elements[0].focus()
+		return this
+	}
+
+	select () {
+		let element = this.elements[0]
+
+		if ('setSelectionRange' in element) {
+			if (!lea(element).is(':focus')) {
+				element.focus()
+			}
+			element.setSelectionRange(0, element.value.length)
+		}
+
+		return this
 	}
 
 	attr (attr, val) {
@@ -220,12 +241,20 @@ export default class Lea {
 		return this
 	}
 
-	parent () {
+	parent (tag) {
 		let parents = []
 
 		this.each( element => {
 			let parent = element.parentNode
-			if (parent) parents.push(parent)
+
+			if (parent) {
+				if (tag !== undefined) {
+					while (parent && parent.tagName.toLowerCase() != tag.toLowerCase()) {
+						parent = parent.parentNode
+					}
+				}
+				parents.push(parent)
+			}
 		})
 		
 		return lea(parents)

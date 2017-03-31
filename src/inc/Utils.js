@@ -33,9 +33,24 @@ export default {
 	},
 
 	str2Node (str) {
-		let div = document.createElement('div')
-		div.innerHTML = str
-		return Array.prototype.slice.call( div.childNodes, 0 )
+		if (!str) return []
+		if (lea.type == 'node') return str
+
+		let
+			regSingleTag  = /^<([a-z][^\/\0>: \x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?: <\/\1>|)$/i
+			, isSingleTag = regSingleTag.exec(str)
+			, nodes
+
+		if (isSingleTag) {
+			let div = document.createElement('div')
+			div.innerHTML = str
+			nodes = div.children
+		} else {
+			let doc = new DOMParser().parseFromString(str, 'text/html')
+			nodes = doc.body.children
+		}
+
+		return Array.from(nodes)
 	},
 
 	debounce (fn, delay) {

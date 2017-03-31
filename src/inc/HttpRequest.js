@@ -27,15 +27,13 @@ export default class HttpRequest {
 		this.parameters     = ''
 
 		this.transport.onreadystatechange = function () {
-
-			self.options.change.call( this )
+			self.options.change.call( self, this )
 
 			if (this.readyState == 4) {
 
-				self.options.always.call( this )
+				self.options.always.call( self, this )
 				
-				if (this.status === 200 || this.status === 0) {
-
+				if (this.status === 200) {
 					let
 						responseContentType = this.getResponseHeader('Content-Type')
 						, response
@@ -45,10 +43,10 @@ export default class HttpRequest {
 					else
 						response = this.responseText
 					
-					self.options.then.call( this, response )
+					self.options.then.call( self, response )
 
 				} else {
-					self.options.catch.call( this )
+					self.options.catch.call( self, this )
 				}
 
 			}
@@ -64,7 +62,7 @@ export default class HttpRequest {
 			this.transport.setRequestHeader( key, val )
 		})
 
-		if ( this.options.method == 'POST' ) {
+		if ( Object.keys(this.options.data).length ) {
 			this.transport.setRequestHeader( 'Content-Type', this.options.contentType )
 
 			lea.parse( this.options.data, (key, val) => {

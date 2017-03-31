@@ -1,10 +1,10 @@
 {
   "name": "lea",
-  "version": "2.1.6",
+  "version": "2.2.0",
   "description": "A tiny JavaScript framework for modern browsers (and developers)",
   "main": "dist/lea.js",
   "scripts": {
-    "test": "eslint ./src/**/*.js && cd ./test && casperjs test run.js",
+    "test": "eslint ./src/**/*.js",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "webpack --watch"
   },

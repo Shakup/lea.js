@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LeaJS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.10/semantic.min.css">
+    <style>
+        body > .ui.container{
+            margin: 5em 0;
+        }
+        h1{
+            margin-bottom: 2em;
+        }
+        thead th:nth-child(2){
+            width: 10%;
+        }
+        .ui.button{
+            margin: 0 auto;
+        }
+        .ui.button.edit{
+            display: block;
+        }
+        .ui.button.save{
+            display: none;
+        }
+        pre{
+            padding: .5em 1em;
+            line-height: 1.4;
+        }
+    </style>
+    <script src="../build/lea.js"></script> 
+</head>
+<body>
+
+    <a href="https://github.com/Shakup/lea.js"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+    <div class="ui container">
+        <h1>lea.js - Example</h1>
+        
+        <table id="posts-list" class="ui striped right aligned table visible">
+            <thead>
+                <tr>
+                    <th class="left aligned">Title</th>
+                    <th class="center aligned">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <h4 class="ui horizontal divider header">
+            <i class="code icon"></i>
+            HTML
+        </h4>
+
+        <pre class="prettyprint"><code>&lt;table id=&quot;posts-list&quot; class=&quot;ui striped right aligned table visible&quot;&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th class=&quot;left aligned&quot;&gt;Title&lt;/th&gt;
+            &lt;th class=&quot;center aligned&quot;&gt;Actions&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+        
+        <h4 class="ui horizontal divider header">
+            <i class="code icon"></i>
+            JAVASCRIPT
+        </h4>
+
+        <pre class="prettyprint"><code>window.$ = lea;
+
+$.ready(getPosts)
+
+function getPosts (e) {
+    $.get('https://jsonplaceholder.typicode.com/posts?userId=1')
+    .then(populate)
+    .catch( err => console.error(err) )
+}
+
+function populate (data) {
+    let $tbody = $('#posts-list tbody')
+
+    let data_render = data.map( item => {
+        return `
+            &lt;tr data-id="${item.id}"&gt;
+                &lt;td class="left aligned post-title"&gt;&lt;span&gt;${item.title}&lt;/span&gt;&lt;/td&gt;
+                &lt;td class="center aligned"&gt;
+                    &lt;button data-id="${item.id}" class="edit tiny blue ui button"&gt;Edit&lt;/button&gt;
+                    &lt;button data-id="${item.id}" class="save tiny green ui button"&gt;Save&lt;/button&gt;
+                &lt;/td&gt;
+            &lt;/tr&gt;`
+    })
+    
+    $tbody
+        .html( data_render.join('') )
+        .find('.edit').click(editItem)
+    
+    $tbody.find('.save').click(saveItem)
+}
+
+function editItem () {
+    let
+        $row     = $(this).parent('tr')
+        , id     = $row.data('id')
+        , $title = $row.find('.post-title span')
+        , title  = $title.html()
+
+    $title.replaceWith(`&lt;div class="ui fluid input"&gt;&lt;input type="text" value="${title}"&gt;&lt;/div&gt;`)
+    
+    $row
+        .find('input')
+        .select()
+        .on('keyup', event =&gt; {
+            if (event.keyCode == 13) {
+                saveItem.call( $row.find('.save').get(0) )
+            } else if (event.keyCode == 27) {
+                $row.find('.input').replaceWith(`&lt;span&gt;${title}&lt;/span&gt;`)
+                $row.find('button').toggle()
+            }
+        })
+    
+    $row.find('button').toggle()
+}
+
+function saveItem () {
+    let
+        $row     = $(this).parent('tr')
+        , id     = $row.data('id')
+        , $title = $row.find('.post-title input')
+        , $btn   = $row.find('.save')
+
+    $btn
+        .addClass('loading')
+        .attr('disabled', 'disabled')
+
+    $.ajax(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+        method: 'PUT',
+        data: {
+            title: $title.val()
+        }
+    }).then( response =&gt; {
+        $btn
+            .removeClass('loading')
+            .removeAttr('disabled')
+
+        $row.find('button').toggle()
+
+        $title.parent().replaceWith(`&lt;span&gt;${response.title}&lt;/span&gt;`)
+    }).catch( err => console.error(err) )
+}</code></pre>
+
+    </div>
+
+    <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js?skin=desert"></script>
+    <script>
+        window.$ = lea;
+
+        $.ready(getPosts)
+
+        function getPosts (e) {
+            $.get('https://jsonplaceholder.typicode.com/posts?userId=1')
+            .then(populate)
+            .catch( err => console.error(err) )
+        }
+
+        function populate (data) {
+            let $tbody = $('#posts-list tbody')
+
+            let data_render = data.map( item => {
+                return `
+                    <tr data-id="${item.id}">
+                        <td class="left aligned post-title"><span>${item.title}</span></td>
+                        <td class="center aligned">
+                            <button data-id="${item.id}" class="edit tiny blue ui button">Edit</button>
+                            <button data-id="${item.id}" class="save tiny green ui button">Save</button>
+                        </td>
+                    </tr>`
+            })
+            
+            $tbody
+                .html( data_render.join('') )
+                .find('.edit').click(editItem)
+            
+            $tbody.find('.save').click(saveItem)
+        }
+
+        function editItem () {
+            let
+                $row     = $(this).parent('tr')
+                , id     = $row.data('id')
+                , $title = $row.find('.post-title span')
+                , title  = $title.html()
+
+            $title.replaceWith(`<div class="ui fluid input"><input type="text" value="${title}"></div>`)
+            
+            $row
+                .find('input')
+                .select()
+                .on('keyup', event => {
+                    if (event.keyCode == 13) {
+                        saveItem.call( $row.find('.save').get(0) )
+                    } else if (event.keyCode == 27) {
+                        $row.find('.input').replaceWith(`<span>${title}</span>`)
+                        $row.find('button').toggle()
+                    }
+                })
+            
+            $row.find('button').toggle()
+        }
+
+        function saveItem () {
+            let
+                $row     = $(this).parent('tr')
+                , id     = $row.data('id')
+                , $title = $row.find('.post-title input')
+                , $btn   = $row.find('.save')
+
+            $btn
+                .addClass('loading')
+                .attr('disabled', 'disabled')
+
+            $.ajax(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+                method: 'PUT',
+                data: {
+                    title: $title.val()
+                }
+            }).then( response => {
+                $btn
+                    .removeClass('loading')
+                    .removeAttr('disabled')
+
+                $row.find('button').toggle()
+
+                $title.parent().replaceWith(`<span>${response.title}</span>`)
+            }).catch( err => console.error(err) )
+        }
+    </script>
+
+</body>
+</html>

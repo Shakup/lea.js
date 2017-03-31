@@ -8,7 +8,7 @@
 
 
 # lea.js
-> A tiny JavaScript framework (~12kb) for modern browsers (and developers).
+> A tiny JavaScript framework (~15kb) for modern browsers (and developers).
 
 
 ## Installation
@@ -49,4 +49,4 @@ npm install lea
 
 ## Copyright and license
 
-Copyright 2014-2015 Sébastien Decamme. Released under [MIT](http://opensource.org/licenses/MIT).
+Copyright 2017 Sébastien Decamme. Released under [MIT](http://opensource.org/licenses/MIT).

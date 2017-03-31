@@ -8,7 +8,6 @@ node_js:
   - "6"
 install:
   - npm install -g eslint
-  - npm install -g casperjs
   - npm install
 notifications:
     email:
