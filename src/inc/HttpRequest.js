@@ -19,6 +19,7 @@ export default class HttpRequest {
 			data: {},
 			headers: {},
 			withCredentials: false,
+			sendRequestHeaders: true,
 			contentType: 'application/x-www-form-urlencoded'
 		}, options || {})
 
@@ -56,15 +57,17 @@ export default class HttpRequest {
 
 		this.transport.open( this.options.method, url, this.options.async )
 
-		this.transport.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' )
+		if (this.options.sendRequestHeaders) {
+			this.transport.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' )
 
-		lea.parse( this.options.headers, (key, val) => {
-			this.transport.setRequestHeader( key, val )
-		})
+			lea.parse( this.options.headers, (key, val) => {
+				this.transport.setRequestHeader( key, val )
+			})
+			
+			this.transport.setRequestHeader( 'Content-Type', this.options.contentType )
+		}
 
 		if ( Object.keys(this.options.data).length ) {
-			this.transport.setRequestHeader( 'Content-Type', this.options.contentType )
-
 			lea.parse( this.options.data, (key, val) => {
 				if (this.parameters.length) this.parameters += '&'
 				this.parameters += encodeURIComponent(key) + '=' + encodeURIComponent(val)
