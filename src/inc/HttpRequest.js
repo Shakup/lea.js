@@ -3,17 +3,18 @@ import lea from '../lea'
 
 export default class HttpRequest {
 
-	constructor (url, options) {
+	constructor (options = {}) {
 		let
 			cb     = function(){}
 			, self = this
 
 		this.options = lea.extend({
+			url: '',
 			method: 'GET',
 			always: cb,
-			then: cb,
-			catch: cb,
-			change: cb,
+			onComplete: cb,
+			onError: cb,
+			onChange: cb,
 			send: true,
 			async: true,
 			data: {},
@@ -21,14 +22,14 @@ export default class HttpRequest {
 			withCredentials: false,
 			sendRequestHeaders: true,
 			contentType: 'application/x-www-form-urlencoded'
-		}, options || {})
+		}, options)
 
 		this.transport      = new XMLHttpRequest()
 		this.options.method = this.options.method.toUpperCase()
 		this.parameters     = ''
 
 		this.transport.onreadystatechange = function () {
-			self.options.change.call( self, this )
+			self.options.onChange.call( self, this )
 
 			if (this.readyState == 4) {
 
@@ -44,10 +45,10 @@ export default class HttpRequest {
 					else
 						response = this.responseText
 					
-					self.options.then.call( self, response )
+					self.options.onComplete.call( self, response )
 
 				} else {
-					self.options.catch.call( self, this )
+					self.options.onError.call( self, this )
 				}
 
 			}
@@ -55,7 +56,7 @@ export default class HttpRequest {
 
 		this.transport.withCredentials = this.options.withCredentials
 
-		this.transport.open( this.options.method, url, this.options.async )
+		this.transport.open( this.options.method, this.options.url, this.options.async )
 
 		if (this.options.sendRequestHeaders) {
 			this.transport.setRequestHeader( 'X-Requested-With', 'XMLHttpRequest' )
@@ -85,22 +86,22 @@ export default class HttpRequest {
 	}
 
 	change (cb) {
-		this.options.change = cb
+		this.options.onChange = cb
 		return this
 	}
 
 	then (cb) {
-		this.options.then = cb
+		this.options.onComplete = cb
 		return this
 	}
 
 	catch (cb) {
-		this.options.catch = cb
+		this.options.onError = cb
 		return this
 	}
 
-	send () {
-		this.transport.send( this.parameters.length ? this.parameters : null )
+	send (obj = null) {
+		this.transport.send( this.parameters.length ? this.parameters : obj )
 		return this
 	}
 

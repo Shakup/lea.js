@@ -1,7 +1,7 @@
 import Lea from './inc/Lea'
 
 
-var lea = (query, context) => new Lea( query, context || document )
+var lea = (query, context = document) => new Lea( query, context )
 
 /* ==========================================================================
    Utils
@@ -37,16 +37,16 @@ lea.isMobile = () => !lea.device('desktop')
 
 import HttpRequest from './inc/HttpRequest'
 
-lea.ajax = (url, options) => {
-	return new HttpRequest( url, options )
+lea.ajax = options => {
+	return new HttpRequest(options)
 }
 
-lea.get = (url, options) => {
-	return lea.ajax( url, lea.extend( options || {}, {method: 'GET'} ) )
+lea.get = (url, options = {}) => {
+	return lea.ajax(lea.extend(options, {method: 'GET', url} ) )
 }
 
-lea.post = (url, data, options) => {
-	return lea.ajax( url, lea.extend( options || {}, {method: 'POST', data: data || {}} ) )
+lea.post = (url, data = {}, options = {}) => {
+	return lea.ajax( lea.extend( options, {method: 'POST', data, url} ) )
 }
 
 export default lea

@@ -37,8 +37,8 @@ export default class Lea {
 		return this
 	}
 
-	get (index) {
-		return index !== undefined ? this.elements[ index ] || null : this.elements
+	get (index = null) {
+		return index !== undefined ? this.elements[ index ] : this.elements
 	}
 
 	addClass (klass) {
@@ -373,7 +373,7 @@ export default class Lea {
 		return serial
 	}
 
-	submit (options) {
+	submit (options = {}) {
 		let form = this.elements[0]
 
 		if ( form.nodeName.toLowerCase() !== 'form' ) return false
@@ -381,12 +381,12 @@ export default class Lea {
 		options = lea.extend({
 			method: form.method || 'GET',
 			data: lea(form).serialize()
-		}, options || {})
+		}, options)
 
 		return lea.ajax( form.action || '#', options )
 	}
 
-	val (value) {
+	val (value = null) {
 		if ( !value ) {
 			return this.get(0).value || ''
 		} else {
