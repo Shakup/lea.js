@@ -29,11 +29,11 @@ export default class HttpRequest {
 		this.parameters     = ''
 
 		this.transport.onreadystatechange = function () {
-			self.options.onChange.call( self, this )
+			self.options.onChange( self.transport )
 
 			if (this.readyState == 4) {
 
-				self.options.always.call( self, this )
+				self.options.always( self.transport )
 				
 				if (this.status === 200) {
 					let
@@ -45,10 +45,10 @@ export default class HttpRequest {
 					else
 						response = this.responseText
 					
-					self.options.onComplete.call( self, response )
+					self.options.onComplete( response, self.transport )
 
 				} else {
-					self.options.onError.call( self, this )
+					self.options.onError( self.transport )
 				}
 
 			}
