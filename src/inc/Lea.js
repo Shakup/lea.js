@@ -41,13 +41,17 @@ export default class Lea {
 		return index !== undefined ? this.elements[ index ] : this.elements
 	}
 
-	addClass (klass) {
-		this.each( element => element.classList.add(klass) )
+	addClass (...classes) {
+		classes.forEach( klass => {
+			this.each( element => element.classList.add(klass) )
+		})
 		return this
 	}
 
-	removeClass (klass) {
-		this.each( element => element.classList.remove(klass) )
+	removeClass (...classes) {
+		classes.forEach( klass => {
+			this.each( element => element.classList.remove(klass) )
+		})
 		return this
 	}
 
