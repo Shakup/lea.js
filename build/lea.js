@@ -89,17 +89,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var lea = function lea(query, context) {
-	   return new _Lea2.default(query, context || document);
+	var lea = function lea(query) {
+	   var context = arguments.length <= 1 || arguments[1] === undefined ? document : arguments[1];
+	   return new _Lea2.default(query, context);
 	};
 	
 	/* ==========================================================================
 	   Utils
 	   ========================================================================== */
 	
-	Object.keys(_Utils2.default).forEach(function (key) {
-	   return lea[key] = _Utils2.default[key];
-	});
+	Object.assign(lea, _Utils2.default);
 	
 	/* ==========================================================================
 	   Cookies
@@ -120,16 +119,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	   Asynchronous Https Requests
 	   ========================================================================== */
 	
-	lea.ajax = function (url, options) {
-	   return new _HttpRequest2.default(url, options);
+	lea.ajax = function (options) {
+	   return new _HttpRequest2.default(options);
 	};
 	
-	lea.get = function (url, options) {
-	   return lea.ajax(url, lea.extend(options || {}, { method: 'GET' }));
+	lea.get = function (url) {
+	   var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	
+	   return lea.ajax(Object.assign(options, { method: 'GET', url: url }));
 	};
 	
-	lea.post = function (url, data, options) {
-	   return lea.ajax(url, lea.extend(options || {}, { method: 'POST', data: data || {} }));
+	lea.post = function (url) {
+	   var data = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	   var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	
+	   return lea.ajax(Object.assign(options, { method: 'POST', data: data, url: url }));
 	};
 	
 	exports.default = lea;
@@ -156,7 +160,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Lea = function () {
-		function Lea(query, context) {
+		function Lea(query) {
+			var context = arguments.length <= 1 || arguments[1] === undefined ? document : arguments[1];
+	
 			_classCallCheck(this, Lea);
 	
 			if (_lea2.default.type(query) != 'array') query = [query];
@@ -195,31 +201,51 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'get',
-			value: function get(index) {
-				return index !== undefined ? this.elements[index] || null : this.elements;
+			value: function get() {
+				var index = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	
+				return index !== undefined ? this.elements[index] : this.elements;
 			}
 		}, {
 			key: 'addClass',
-			value: function addClass(klass) {
-				this.each(function (element) {
-					return element.classList.add(klass);
+			value: function addClass() {
+				var _this = this;
+	
+				for (var _len = arguments.length, classes = Array(_len), _key = 0; _key < _len; _key++) {
+					classes[_key] = arguments[_key];
+				}
+	
+				classes.forEach(function (klass) {
+					_this.each(function (element) {
+						return element.classList.add(klass);
+					});
 				});
 				return this;
 			}
 		}, {
 			key: 'removeClass',
-			value: function removeClass(klass) {
-				this.each(function (element) {
-					return element.classList.remove(klass);
+			value: function removeClass() {
+				var _this2 = this;
+	
+				for (var _len2 = arguments.length, classes = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+					classes[_key2] = arguments[_key2];
+				}
+	
+				classes.forEach(function (klass) {
+					_this2.each(function (element) {
+						return element.classList.remove(klass);
+					});
 				});
 				return this;
 			}
 		}, {
 			key: 'hasClass',
-			value: function hasClass(klass) {
+			value: function hasClass() {
+				var klass = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	
 				var bool = true;
 	
-				this.elements.forEach(function (element) {
+				this.each(function (element) {
 					if (!element.classList.contains(klass)) {
 						bool = false;
 						return false;
@@ -230,7 +256,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'toggleClass',
-			value: function toggleClass(klass) {
+			value: function toggleClass() {
+				var klass = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	
 				this.each(function (element) {
 					return element.classList.toggle(klass);
 				});
@@ -238,13 +266,12 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'show',
-			value: function show(display) {
-				if (!display) display = 'block';
+			value: function show() {
+				var display = arguments.length <= 0 || arguments[0] === undefined ? 'block' : arguments[0];
 	
 				this.each(function (element) {
 					return element.style.display = display;
 				});
-	
 				return this;
 			}
 		}, {
@@ -257,14 +284,13 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'toggle',
-			value: function toggle(display) {
-				if (!display) display = 'block';
+			value: function toggle() {
+				var display = arguments.length <= 0 || arguments[0] === undefined ? 'block' : arguments[0];
 	
 				this.each(function (element) {
 					var element_display = (0, _lea2.default)(element).style('display');
 					element.style.display = element_display == 'none' ? display : 'none';
 				});
-	
 				return this;
 			}
 		}, {
@@ -393,10 +419,10 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'removeData',
 			value: function removeData(data) {
-				var _this = this;
+				var _this3 = this;
 	
 				this.each(function () {
-					return delete _this.dataset[data];
+					return delete _this3.dataset[data];
 				});
 				return this;
 			}
@@ -523,7 +549,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'is',
-			value: function is(selector) {
+			value: function is() {
+				var selector = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	
 				var flag = true,
 				    matches = function matches(element) {
 					return (element.matches || element.matchesSelector || element.msMatchesSelector || element.webkitMatchesSelector).call(element, selector);
@@ -539,23 +567,34 @@ return /******/ (function(modules) { // webpackBootstrap
 				return flag;
 			}
 		}, {
-			key: 'offset',
-			value: function offset() {
+			key: 'scroll',
+			value: function scroll() {
 				if (!this.length) return { top: 0, left: 0 };
 	
+				var element = this.elements[0];
+	
+				if (element == document || element == window) {
+					return {
+						top: window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0,
+						left: window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0
+					};
+				}
+			}
+		}, {
+			key: 'offset',
+			value: function offset() {
 				var element = this.elements[0],
-				    rect = element.getBoundingClientRect();
+				    rect = element.getBoundingClientRect(),
+				    scroll = (0, _lea2.default)(document).scroll();
 	
 				return {
-					top: rect.top + document.body.scrollTop,
-					left: rect.left + document.body.scrollLeft
+					top: rect.top + scroll.top,
+					left: rect.left + scroll.left
 				};
 			}
 		}, {
 			key: 'position',
 			value: function position() {
-				if (!this.length) return { top: 0, left: 0 };
-	
 				var rect = this.elements[0].getBoundingClientRect();
 	
 				return {
@@ -565,7 +604,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'replaceWith',
-			value: function replaceWith(html) {
+			value: function replaceWith() {
+				var html = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
+	
 				this.each(function (element) {
 					return element.outerHTML = html;
 				});
@@ -602,7 +643,9 @@ return /******/ (function(modules) { // webpackBootstrap
 			}
 		}, {
 			key: 'submit',
-			value: function submit(options) {
+			value: function submit() {
+				var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+	
 				var form = this.elements[0];
 	
 				if (form.nodeName.toLowerCase() !== 'form') return false;
@@ -610,13 +653,15 @@ return /******/ (function(modules) { // webpackBootstrap
 				options = _lea2.default.extend({
 					method: form.method || 'GET',
 					data: (0, _lea2.default)(form).serialize()
-				}, options || {});
+				}, options);
 	
 				return _lea2.default.ajax(form.action || '#', options);
 			}
 		}, {
 			key: 'val',
-			value: function val(value) {
+			value: function val() {
+				var value = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	
 				if (!value) {
 					return this.get(0).value || '';
 				} else {
@@ -629,7 +674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'style',
 			value: function style(props, value) {
-				var _this2 = this;
+				var _this4 = this;
 	
 				function compute(val) {
 					if (!val) return '';
@@ -662,10 +707,10 @@ return /******/ (function(modules) { // webpackBootstrap
 						var prefixed_props = {};
 	
 						Object.keys(props).forEach(function (prop) {
-							return prefixed_props[_lea2.default.prefix(prop)] = props[prop];
+							return prefixed_props[_lea2.default.prefix(_lea2.default.kebabcase(prop))] = props[prop];
 						});
 	
-						_this2.each(function (element) {
+						_this4.each(function (element) {
 							Object.keys(prefixed_props).forEach(function (prop) {
 								return element.style[prop] = prefixed_props[prop];
 							});
@@ -953,38 +998,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var HttpRequest = function () {
-		function HttpRequest(url, options) {
+		function HttpRequest() {
 			var _this = this;
+	
+			var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 	
 			_classCallCheck(this, HttpRequest);
 	
 			var cb = function cb() {},
 			    self = this;
 	
-			this.options = _lea2.default.extend({
+			this.options = Object.assign({
+				url: '',
 				method: 'GET',
 				always: cb,
-				then: cb,
-				catch: cb,
-				change: cb,
+				onComplete: cb,
+				onError: cb,
+				onChange: cb,
 				send: true,
 				async: true,
 				data: {},
 				headers: {},
 				withCredentials: false,
+				sendRequestHeaders: true,
 				contentType: 'application/x-www-form-urlencoded'
-			}, options || {});
+			}, options);
 	
 			this.transport = new XMLHttpRequest();
 			this.options.method = this.options.method.toUpperCase();
 			this.parameters = '';
 	
 			this.transport.onreadystatechange = function () {
-				self.options.change.call(self, this);
+				self.options.onChange(self.transport);
 	
 				if (this.readyState == 4) {
 	
-					self.options.always.call(self, this);
+					self.options.always(self.transport);
 	
 					if (this.status === 200) {
 						var responseContentType = this.getResponseHeader('Content-Type'),
@@ -992,26 +1041,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 						if (responseContentType && responseContentType.indexOf('application/json') > -1) response = JSON.parse(this.responseText);else response = this.responseText;
 	
-						self.options.then.call(self, response);
+						self.options.onComplete(response, self.transport);
 					} else {
-						self.options.catch.call(self, this);
+						self.options.onError(self.transport);
 					}
 				}
 			};
 	
 			this.transport.withCredentials = this.options.withCredentials;
 	
-			this.transport.open(this.options.method, url, this.options.async);
+			this.transport.open(this.options.method, this.options.url, this.options.async);
 	
-			this.transport.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			if (this.options.sendRequestHeaders) {
+				this.transport.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 	
-			_lea2.default.parse(this.options.headers, function (key, val) {
-				_this.transport.setRequestHeader(key, val);
-			});
+				_lea2.default.parse(this.options.headers, function (key, val) {
+					_this.transport.setRequestHeader(key, val);
+				});
+	
+				this.transport.setRequestHeader('Content-Type', this.options.contentType);
+			}
 	
 			if (Object.keys(this.options.data).length) {
-				this.transport.setRequestHeader('Content-Type', this.options.contentType);
-	
 				_lea2.default.parse(this.options.data, function (key, val) {
 					if (_this.parameters.length) _this.parameters += '&';
 					_this.parameters += encodeURIComponent(key) + '=' + encodeURIComponent(val);
@@ -1032,25 +1083,27 @@ return /******/ (function(modules) { // webpackBootstrap
 		}, {
 			key: 'change',
 			value: function change(cb) {
-				this.options.change = cb;
+				this.options.onChange = cb;
 				return this;
 			}
 		}, {
 			key: 'then',
 			value: function then(cb) {
-				this.options.then = cb;
+				this.options.onComplete = cb;
 				return this;
 			}
 		}, {
 			key: 'catch',
 			value: function _catch(cb) {
-				this.options.catch = cb;
+				this.options.onError = cb;
 				return this;
 			}
 		}, {
 			key: 'send',
 			value: function send() {
-				this.transport.send(this.parameters.length ? this.parameters : null);
+				var obj = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+	
+				this.transport.send(this.parameters.length ? this.parameters : obj);
 				return this;
 			}
 		}, {

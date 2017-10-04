@@ -134,7 +134,8 @@ function saveItem () {
         .addClass('loading')
         .attr('disabled', 'disabled')
 
-    $.ajax(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+    $.ajax({
+        url: `https://jsonplaceholder.typicode.com/posts/${id}`,
         method: 'PUT',
         data: {
             title: $title.val()
@@ -221,7 +222,8 @@ function saveItem () {
                 .addClass('loading')
                 .attr('disabled', 'disabled')
 
-            $.ajax(`https://jsonplaceholder.typicode.com/posts/${id}`, {
+            $.ajax({
+                url: `https://jsonplaceholder.typicode.com/posts/${id}`,
                 method: 'PUT',
                 data: {
                     title: $title.val()

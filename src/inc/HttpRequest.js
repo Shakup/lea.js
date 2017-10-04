@@ -8,7 +8,7 @@ export default class HttpRequest {
 			cb     = function(){}
 			, self = this
 
-		this.options = lea.extend({
+		this.options = Object.assign({
 			url: '',
 			method: 'GET',
 			always: cb,

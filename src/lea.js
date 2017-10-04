@@ -1,7 +1,7 @@
 import Lea from './inc/Lea'
 
 
-var lea = (query, context = document) => new Lea( query, context )
+const lea = (query, context = document) => new Lea( query, context )
 
 /* ==========================================================================
    Utils
@@ -9,7 +9,7 @@ var lea = (query, context = document) => new Lea( query, context )
 
 import Utils from './inc/Utils'
 
-Object.keys(Utils).forEach( key => lea[key] = Utils[key] )
+Object.assign(lea, Utils)
 
 
 /* ==========================================================================
@@ -42,11 +42,11 @@ lea.ajax = options => {
 }
 
 lea.get = (url, options = {}) => {
-	return lea.ajax(lea.extend(options, {method: 'GET', url} ) )
+	return lea.ajax( Object.assign(options, {method: 'GET', url} ) )
 }
 
 lea.post = (url, data = {}, options = {}) => {
-	return lea.ajax( lea.extend( options, {method: 'POST', data, url} ) )
+	return lea.ajax( Object.assign( options, {method: 'POST', data, url} ) )
 }
 
 export default lea

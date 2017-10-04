@@ -3,7 +3,7 @@ import lea from '../lea'
 
 export default class Lea {
 
-	constructor (query, context) {
+	constructor (query, context = document) {
 		if ( lea.type(query) != 'array' ) query = [query]
 
 		this.elements = query.map( (obj) => {
@@ -23,7 +23,7 @@ export default class Lea {
 	}
 
 	each (action) {
-		let response, BreakException = function(){}
+		let response, BreakException = function () {}
 
 		try {
 			this.elements.forEach( (element, index) => {
@@ -55,10 +55,10 @@ export default class Lea {
 		return this
 	}
 
-	hasClass (klass) {
+	hasClass (klass = '') {
 		let bool = true
 
-		this.elements.forEach( (element) => {
+		this.each( element => {
 			if ( !element.classList.contains(klass) ) {
 				bool = false
 				return false
@@ -68,16 +68,13 @@ export default class Lea {
 		return bool
 	}
 
-	toggleClass (klass) {
+	toggleClass (klass = '') {
 		this.each( element => element.classList.toggle(klass) )
 		return this
 	}
 
-	show (display) {
-		if ( !display ) display = 'block'
-
+	show (display = 'block') {
 		this.each( element => element.style.display = display )
-
 		return this
 	}
 
@@ -86,14 +83,11 @@ export default class Lea {
 		return this
 	}
 
-	toggle (display) {
-		if ( !display ) display = 'block'
-
+	toggle (display = 'block') {
 		this.each( element => {
 			let element_display = lea(element).style('display')
 			element.style.display = element_display == 'none' ? display : 'none'
 		})
-
 		return this
 	}
 
@@ -110,7 +104,7 @@ export default class Lea {
 		let tabevts = events.split(' ')
 
 		this.each( element => {
-			tabevts.forEach( (event) => element.addEventListener(event, fn, false) )
+			tabevts.forEach( event => element.addEventListener(event, fn, false) )
 		} )
 
 		return this
@@ -120,7 +114,7 @@ export default class Lea {
 		let tabevts = events.split(' ')
 
 		this.each( element => {
-			tabevts.forEach( (event) => element.removeEventListener(event, fn, false) )
+			tabevts.forEach( event => element.removeEventListener(event, fn, false) )
 		})
 
 		return this
@@ -130,7 +124,7 @@ export default class Lea {
 		let tabevts = events.split(' ')
 
 		this.each( element => {
-			tabevts.forEach( (event) => {
+			tabevts.forEach( event => {
 				element.addEventListener(event, (evt) => {
 					if ( lea( evt.target ).is(selector) ) fn.call( evt.target, event )
 				}, false )
@@ -301,7 +295,7 @@ export default class Lea {
 		return this
 	}
 
-	is (selector) {
+	is (selector = '') {
 		let
 			flag      = true
 			, matches = element => {
@@ -318,22 +312,32 @@ export default class Lea {
 		return flag
 	}
 
-	offset () {
+	scroll () {
 		if ( !this.length ) return {top:0, left:0}
 
+		let element = this.elements[0]
+
+		if ( element == document || element == window ) {
+			return {
+				top: window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0,
+				left: window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0,
+			}
+		}
+	}
+
+	offset () {
 		let
-			element = this.elements[0],
-			rect    = element.getBoundingClientRect()
+			element  = this.elements[0]
+			, rect   = element.getBoundingClientRect()
+			, scroll = lea(document).scroll()
 
 		return {
-			top: rect.top + document.body.scrollTop,
-			left: rect.left + document.body.scrollLeft
+			top: rect.top + scroll.top,
+			left: rect.left + scroll.left
 		}
 	}
 
 	position () {
-		if ( !this.length ) return {top:0, left:0}
-
 		let rect = this.elements[0].getBoundingClientRect()
 
 		return {
@@ -342,7 +346,7 @@ export default class Lea {
 		}
 	}
 
-	replaceWith (html) {
+	replaceWith (html = '') {
 		this.each( element => element.outerHTML = html )
 		return this
 	}
@@ -428,7 +432,7 @@ export default class Lea {
 		if ( 'object' == propsType && !value ) {
 			let prefixed_props = {}
 
-			Object.keys(props).forEach( prop => prefixed_props[ lea.prefix(prop) ] = props[prop] )
+			Object.keys(props).forEach( prop => prefixed_props[ lea.prefix( lea.kebabcase(prop) ) ] = props[prop] )
 
 			this.each( element => {
 				Object.keys(prefixed_props).forEach( prop => element.style[prop] = prefixed_props[prop] )
